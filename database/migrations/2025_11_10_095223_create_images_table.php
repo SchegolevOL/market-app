@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->index()->constrained('products');
+            $table->morphs('imageable');
             $table->string('path')->nullable();
+            $table->string('type')->nullable();
             $table->timestamps();
         });
     }

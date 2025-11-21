@@ -2,13 +2,39 @@
 
 namespace App\Services;
 
+use App\Models\Category;
+
 class CategoryService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
+
+    public static function store(array $data): Category
     {
-        //
+        $category = Category::create($data['category']);
+
+        return $category;
+    }
+
+    public static function update(Category $category, array $data): Category
+    {
+
+        $category->update($data);
+
+        return $category->fresh();
+    }
+
+
+    public static function breadcrumbs(Category $category): array
+    {
+        $breadcrumbs =[];
+        while ($category->parent_id){
+
+            $category = Category::find($category->parent_id);
+            $breadcrumbs[] = [
+                'id' => $category->id,
+                'title' => $category->title,
+                'parent_id' => $category->parent_id,
+            ];
+        }
+        return array_reverse($breadcrumbs);
     }
 }

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductParent\StoteRequest;
-use App\Http\Requests\ProductParent\UpdateRequest;
+use App\Http\Requests\Admin\ProductParent\StoreRequest;
+use App\Http\Requests\Admin\ProductParent\UpdateRequest;
+use App\Http\Resources\ProductParent\ProductParentResource;
 use App\Models\ProductParent;
+use App\Services\ProductParentService;
+use Illuminate\Http\Response;
+
 
 class ProductParentController extends Controller
 {
@@ -14,7 +18,9 @@ class ProductParentController extends Controller
      */
     public function index()
     {
-        //
+        $productParents = ProductParent::all();
+        $productParents =ProductParentResource::collection($productParents)->resolve();
+        return inertia('Admin/ProductParent/Index', compact('productParents'));
     }
 
     /**
@@ -22,15 +28,17 @@ class ProductParentController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('Admin/ProductParent/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoteRequest $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $data = $request->validated();
+        $productParent = ProductParentService::store($data);
+        return ProductParentResource::make($productParent)->resolve();
     }
 
     /**
@@ -38,7 +46,8 @@ class ProductParentController extends Controller
      */
     public function show(ProductParent $productParent)
     {
-        //
+        $productParent = ProductParentResource::make($productParent)->resolve();
+        return inertia('Admin/ProductParent/Show', compact('productParent'));
     }
 
     /**
@@ -46,7 +55,8 @@ class ProductParentController extends Controller
      */
     public function edit(ProductParent $productParent)
     {
-        //
+        $productParent = ProductParentResource::make($productParent)->resolve();
+        return inertia('Admin/ProductParent/Edit', compact('productParent'));
     }
 
     /**
@@ -54,7 +64,9 @@ class ProductParentController extends Controller
      */
     public function update(UpdateRequest $request, ProductParent $productParent)
     {
-        //
+        $data = $request->validated();
+        $productParent = ProductParentService::update($productParent, $data);
+        return ProductParentResource::make($productParent)->resolve();
     }
 
     /**
@@ -62,6 +74,9 @@ class ProductParentController extends Controller
      */
     public function destroy(ProductParent $productParent)
     {
-        //
+        $productParent->delete();
+        return response([
+            'message' => 'ProductParent deleted successfully'
+        ], Response::HTTP_OK);
     }
 }

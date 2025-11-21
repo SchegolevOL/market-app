@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\ProductParent;
+namespace App\Http\Requests\Admin\ProductParent;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoteRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

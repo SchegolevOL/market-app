@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Requests\Param;
+namespace App\Http\Requests\Admin\Param;
 
+use App\Enums\Param\ParamFilterTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'param.title' => 'required|string',
+            'param.filter_type' => 'required|integer|in:' . ParamFilterTypeEnum::valuesAsString()
         ];
     }
 }

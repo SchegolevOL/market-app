@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Category;
+namespace App\Http\Requests\Admin\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Storage;
 
 class StoreRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,13 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
+
+
         return [
-            //
+            'category.title' => 'required|string|max:255',
+            'category.parent_id' => 'nullable|integer|exists:categories,id',
+
         ];
     }
+
 }
