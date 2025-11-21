@@ -30,12 +30,16 @@ export default {
 </script>
 
 <template>
+
+
     <div class="container mx-auto px-4 py-4">
         <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
             <h1>Index Category</h1>
         </div>
     </div>
+
     <div class="container mx-auto px-4 ">
+
         <Link :href="route('admin.categories.create')"
                class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
         Create Category

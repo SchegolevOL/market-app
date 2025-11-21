@@ -63,7 +63,7 @@ export default {
         </div>
 
         <div class="p-6 space-y-6">
-            <form action="#">
+
                 <div class="grid grid-cols-6 gap-6">
                     <div class="col-span-6 sm:col-span-3">
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
@@ -91,7 +91,7 @@ export default {
 
 
                 </div>
-            </form>
+
         </div>
 
         <div class="p-6 border-t border-gray-200 rounded-b">

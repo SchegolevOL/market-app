@@ -57,9 +57,7 @@ export default {
                       class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
                     Back Index
                 </Link>
-                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <h1>Create Category</h1>
-                </div>
+
                 <div class="">
                     <div >
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
@@ -68,7 +66,7 @@ export default {
                                placeholder="Enter Title”" required="">
                     </div>
                     <div class="col-span-6 sm:col-span-3 py-4">
-                        <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Category</label>
+                        <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Parent Category</label>
 
                         <select v-model="category.parent_id"
                                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
@@ -77,7 +75,7 @@ export default {
                             <option v-for="category in categories" :value="category.id">{{ category.title }}</option>
 
                         </select>
-                        <label for="example1" class="mb-1 block text-sm font-medium text-gray-700">Upload file</label>
+
 
 
                     </div>

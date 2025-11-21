@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductParent\StoreRequest;
 use App\Http\Requests\Admin\ProductParent\UpdateRequest;
+use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\ProductParent\ProductParentResource;
+use App\Models\Category;
 use App\Models\ProductParent;
 use App\Services\ProductParentService;
 use Illuminate\Http\Response;
@@ -28,7 +30,9 @@ class ProductParentController extends Controller
      */
     public function create()
     {
-        return inertia('Admin/ProductParent/Create');
+        $categories = Category::all();
+        $categories =CategoryResource::collection($categories)->resolve();
+        return inertia('Admin/ProductParent/Create', compact('categories'));
     }
 
     /**
@@ -55,8 +59,10 @@ class ProductParentController extends Controller
      */
     public function edit(ProductParent $productParent)
     {
+        $categories = Category::all();
+        $categories =CategoryResource::collection($categories)->resolve();
         $productParent = ProductParentResource::make($productParent)->resolve();
-        return inertia('Admin/ProductParent/Edit', compact('productParent'));
+        return inertia('Admin/ProductParent/Edit', compact('productParent', 'categories'));
     }
 
     /**

@@ -45,7 +45,7 @@ export default {
 
         },
         storeCategoryToIndex() {
-            axios.post(route('admin.categories.store'), this.category)
+            axios.post(route('admin.categories.store'), this.emit)
                 .then(function () {
                         window.location.replace(route('admin.categories.index'));
 

@@ -56,8 +56,9 @@ class ParamController extends Controller
      */
     public function edit(Param $param)
     {
+        $filterTypes = ParamFilterTypeEnum::collection();
         $param = ParamResource::make($param)->resolve();
-        return inertia('Admin/Param/Edit', compact('param'));
+        return inertia('Admin/Param/Edit', compact('param', 'filterTypes'));
     }
 
     /**

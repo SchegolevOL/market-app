@@ -57,8 +57,8 @@ export default {
 
                 <td class="px-6 py-4 whitespace-nowrap">{{ count }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ param.id }}</td>
-                <Link :href="route('admin.params.show', param.id)" class="">
-                    <td class="px-6 py-4 whitespace-nowrap flex ">{{ param.title }}</td>
+                <Link :href="route('admin.params.show', param.id)" class=" py-6 whitespace-nowrap flex px-6">
+                    <td >{{ param.title }}</td>
                 </Link>
                 <td class="px-6 py-4 whitespace-nowrap">{{ param.filter_type }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ param.filter_type_title }}</td>

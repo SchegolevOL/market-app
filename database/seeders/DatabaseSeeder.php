@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
         $user = User::query()->firstOrCreate(['email'=>$user['email']],$user);
         $role = Role::query()->firstOrCreate(['title'=>RoleEnum::ADMIN->value]);
         $user->roles()->sync([$role->id]);
-
+        $this->call([
+CategorySeeder::class,
+        ]);
     }
 }
