@@ -5,8 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Product\StoreRequest;
 use App\Http\Requests\Admin\Product\UpdateRequest;
+use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Product\ProductResource;
+use App\Http\Resources\ProductGroup\ProductGroupResource;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductGroup;
+use App\Models\ProductParent;
 use App\Services\ProductService;
 use Illuminate\Http\Response;
 
@@ -27,7 +32,13 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return inertia('Admin/Product/Create');
+        $categories = Category::all();
+        $categories =CategoryResource::collection($categories)->resolve();
+
+        $productGroups = ProductGroup::all();
+        $productGroups =ProductGroupResource::collection($productGroups)->resolve();
+
+        return inertia('Admin/Product/Create', compact('categories','productGroups'));
     }
 
     /**
@@ -35,7 +46,8 @@ class ProductController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $data = $request->validated();
+
+        $data = $request->validationData();
         $product = ProductService::store($data);
         return ProductResource::make($product)->resolve();
     }
@@ -54,8 +66,13 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $categories = Category::all();
+        $categories =CategoryResource::collection($categories)->resolve();
+
+        $productGroups = ProductGroup::all();
+        $productGroups =ProductGroupResource::collection($productGroups)->resolve();
         $product = ProductResource::make($product)->resolve();
-        return inertia('Admin/Product/Edit', compact('product'));
+        return inertia('Admin/Product/Edit', compact('product', 'categories','productGroups'));
     }
 
     /**

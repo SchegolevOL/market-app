@@ -22,6 +22,7 @@ export default {
         {
             axios.delete(route('admin.categories.destroy', category.id))
                 .then(res=>{
+                    console.log(category)
                     this.categoriesData = this.categoriesData.filter(categoryData=> categoryData.id !== category.id)
                 })
         }
