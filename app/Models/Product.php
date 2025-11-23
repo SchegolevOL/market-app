@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Product extends Model
 {
-    public function images()
+    public function images(): MorphMany
     {
-        return $this->morphMany(Image::class, 'imaginable');
+        return $this->morphMany(Image::class, 'imageable');
     }
 }

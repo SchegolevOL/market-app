@@ -10,12 +10,15 @@ class ProductService
 
     public static function store(array $data):Product
     {
-        return Product::create($data['product']);
+        $product = Product::create($data['product']);
+        ImageService::storeBatch($product, $data);
+        return $product;
     }
 
     public static function update(Product $product, array $data):Product
     {
         $product->update($data['product']);
+        ImageService::storeBatch($product, $data);
         return $product->fresh();
     }
 }

@@ -31,6 +31,8 @@ class StoreRequest extends FormRequest
             'product.old_price' => 'numeric',
             'product.qty' => 'required|integer',
             'product.article' => 'required|string',
+            'images'=>'nullable|array',
+            'images.*' => 'required|file',
         ];
     }
 }

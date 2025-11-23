@@ -21,6 +21,8 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+
+
         return [
             'product.product_group_id' => 'required|integer|exists:product_groups,id',
             'product.category_id' => 'required|integer|exists:categories,id',
@@ -30,6 +32,9 @@ class UpdateRequest extends FormRequest
             'product.price' => 'required|numeric',
             'product.old_price' => 'numeric',
             'product.qty' => 'required|integer',
-            'product.article' => 'required|string',        ];
+            'product.article' => 'required|string',
+            'images' => 'nullable|array',
+            'images.*' => 'required|file',
+        ];
     }
 }

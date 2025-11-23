@@ -22,29 +22,33 @@ export default {
 
 
                 },
-                //images:null,
+                images: [],
                 //params:[],
-            }
-
-
+            },
+            imagesView:[],
         }
     },
 
 
     methods: {
         storeProduct() {
-            console.log(this.entries.product);
+            console.log(this.entries);
 
-            axios.post(route('admin.products.store'), this.entries)
+            axios.post(route('admin.products.store'), this.entries, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+
+            })
                 .then(res => {
 
 
                     this.entries.product = {
-                        title:'',
-                        description:null,
-                        content:null,
-                        price:null,
-                        old_price:null,
+                        title: '',
+                        description: null,
+                        content: null,
+                        price: null,
+                        old_price: null,
                         category_id: null,
                         product_group_id: null,
 
@@ -56,16 +60,38 @@ export default {
 
         },
         storeProductToIndex() {
-            axios.post(route('admin.products.store'), this.entries)
+
+            console.log(this.entries)
+            axios.post(route('admin.products.store'), this.entries, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
                 .then(function () {
                         window.location.replace(route('admin.products.index'));
 
                     }
                 )
         },
-        addImages() {
+        addImages(e) {
 
+            this.entries.images = e.target.files
+
+            for (let i =0; i< this.entries.images.length; i++){
+                this.imagesView[i] = {
+                    'item':i,
+                    'url':URL.createObjectURL(this.entries.images[i]),
+                };
+            }
+            console.log(this.entries.images)
         },
+        deleteImage(image, e){
+
+            this.imagesView.splice(image.item, 1)
+            this.entries.images.splice(image.item, 1)
+            ;
+            e.target.files.splice(image.item, 1)
+        }
 
     }
 
@@ -74,23 +100,24 @@ export default {
 </script>
 
 <template>
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <h1>Create Product</h1>
+    <div class="grid grid-cols-3 gap-4">
+        <div class="">
+            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <h1>Create Product</h1>
+            </div>
         </div>
-    </div>
+        <div class="">
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 ">
-        <div class="grid md:grid-cols-2 gap-8">
-
-
-            <!-- Product Info -->
+        </div>
+        <div class="">
+            <Link :href="route('admin.products.index')"
+                  class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
+                Back Index
+            </Link>
+        </div>
+        <div class="col-span-2 ...">
             <div class="space-y-6">
-                <Link :href="route('admin.products.index')"
-                      class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
-                    Back Index
-                </Link>
+
                 <div class="">
                     <div>
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
@@ -180,12 +207,14 @@ export default {
                                         </div>-->
 
 
-                    <!--                    <div>
-                                            <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Select Images</label>
-                                            <input type="file"
-                                                   @change="addImages"
-                                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
-                                        </div>-->
+                    <div>
+                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Select
+                            Images</label>
+                        <input type="file"
+                               multiple
+                               @change="addImages"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
+                    </div>
                     <div class="p-6 border-t border-gray-200 rounded-b">
 
                         <button @click.prevent="storeProduct"
@@ -202,9 +231,27 @@ export default {
 
             </div>
         </div>
+        <div class="">
+            <div v-for="image in imagesView" class="flex">
+                <div class="py-4 px-2">
+                    <button @click="deleteImage(image)" class=" border bg-red-600 text-white right-0">
+                        Delete
+                    </button>
+                    <img :src="image.url" alt="" class="">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 
-    </main>
+
+
+
+
+
 </template>
 
 <style scoped>

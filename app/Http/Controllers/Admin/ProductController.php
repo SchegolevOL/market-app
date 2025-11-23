@@ -47,7 +47,7 @@ class ProductController extends Controller
     public function store(StoreRequest $request)
     {
 
-        $data = $request->validationData();
+        $data = $request->validated();
         $product = ProductService::store($data);
         return ProductResource::make($product)->resolve();
     }
@@ -80,7 +80,9 @@ class ProductController extends Controller
      */
     public function update(UpdateRequest $request, Product $product)
     {
+
         $data = $request->validated();
+
         $product = ProductService::update($product, $data);
         return ProductResource::make($product)->resolve();
     }

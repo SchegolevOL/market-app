@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\Param\ParamFilterTypeEnum;
 use App\Models\Category;
 use App\Models\Image;
+use App\Models\Product;
 use App\Models\User;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
@@ -30,12 +31,10 @@ class Go extends Command
      */
     public function handle()
     {
-        $category = Category::query()->find(5);
-
-        $res = CategoryService::breadcrumbs($category, []);
+        $products = Product::query()->first();
 
 
 
-        dd($res);
+        dd($products->images);
     }
 }

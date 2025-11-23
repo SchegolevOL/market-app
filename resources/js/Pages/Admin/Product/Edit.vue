@@ -10,20 +10,22 @@ export default {
     },
     layout: AdminLayout,
     props: {
-        product:{},
+        product: {},
         categories: Array,
         productGroups: Array,
     },
     data() {
         return {
             entries: {
-                product: this.product
+                product: this.product,
 
+                images: null,
+                _method: 'patch',
+            },
 
-                },
-                //images:null,
-                //params:[],
-            }
+            //
+            //params:[],
+        }
 
 
     },
@@ -31,39 +33,41 @@ export default {
 
     methods: {
         updateProduct() {
-            console.log(this.entries.product);
+            console.log(this.entries);
 
-            axios.patch(route('admin.products.update',this.entries.product), this.entries)
-                .then(res => {
+            axios.post(route('admin.products.update', this.entries.product.id), this.entries, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
 
+            }).then(res => {
 
-                    this.entries.product = {
-                        title:'',
-                        description:null,
-                        content:null,
-                        price:null,
-                        old_price:null,
-                        category_id: null,
-                        product_group_id: null,
+                console.log(res);
+                this.entries.product.images = res.data.images
 
-
-                    }
-
-
-                })
+            })
 
         },
         updateProductToIndex() {
-            axios.patch(route('admin.products.update',this.entries.product), this.entries)
+            axios.patch(route('admin.products.update', this.entries.product), this.entries)
                 .then(function () {
                         window.location.replace(route('admin.products.index'));
 
                     }
                 )
         },
-        addImages() {
+        addImages(e) {
+
+            this.entries.images = e.target.files
 
         },
+        deleteImage(image) {
+            axios.delete(route('admin.images.destroy', image.id)).then(
+                res => {
+                    this.product.images = this.product.images.filter(productImage => productImage.id !== image.id)
+                }
+            )
+        }
 
     }
 
@@ -72,23 +76,25 @@ export default {
 </script>
 
 <template>
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <h1>Update Product</h1>
+
+    <div class="grid grid-cols-3 gap-4">
+        <div class="">
+            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <h1>Update Product</h1>
+            </div>
         </div>
-    </div>
+        <div class="">
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 ">
-        <div class="grid md:grid-cols-2 gap-8">
-
-
-            <!-- Product Info -->
+        </div>
+        <div class="">
+            <Link :href="route('admin.products.index')"
+                  class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
+                Back Index
+            </Link>
+        </div>
+        <div class="col-span-2 ...">
             <div class="space-y-6">
-                <Link :href="route('admin.products.index')"
-                      class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
-                    Back Index
-                </Link>
+
                 <div class="">
                     <div>
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
@@ -164,6 +170,14 @@ export default {
                         </select>
 
                     </div>
+                    <div>
+                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Select
+                            Images</label>
+                        <input type="file"
+                               multiple
+                               @change="addImages"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
+                    </div>
                     <!--Params-->
                     <!--                    <div class="col-span-6 sm:col-span-3 py-4">
                                             <label for="product_parent"
@@ -188,17 +202,45 @@ export default {
 
                         <button @click.prevent="updateProduct"
                                 class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                                type="submit">Create
+                                type="submit">Update
                         </button>
                         <button @click.prevent="updateProductToIndex"
                                 class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                                type="submit">Create to Index
+                                type="submit">Update to Index
                         </button>
                     </div>
                 </div>
 
 
             </div>
+        </div>
+        <div class="">
+            <div v-for="image in product.images" class="">
+                <div class="py-4">
+                    <button @click.prevent="deleteImage(image)" class="flex border bg-red-600 text-white right-0">
+                        Delete
+                    </button>
+                    <img :src="image.url" alt="" class="">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="container mx-auto px-4 py-4">
+
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 ">
+        <div class="grid md:grid-cols-2 gap-8">
+
+
+            <!-- Product Info -->
+
         </div>
 
 
