@@ -92,7 +92,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
+        ProductService::delete($product);
+
         return response([
             'message' => 'Product deleted successfully'
         ], Response::HTTP_OK);

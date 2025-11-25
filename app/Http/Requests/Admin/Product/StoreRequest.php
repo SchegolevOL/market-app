@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
             'product.price' => 'required|numeric',
             'product.old_price' => 'numeric',
             'product.qty' => 'required|integer',
-            'product.article' => 'required|string',
+            'product.article' => 'required|string|unique:products,article',
             'images'=>'nullable|array',
             'images.*' => 'required|file',
         ];

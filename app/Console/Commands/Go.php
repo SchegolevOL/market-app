@@ -31,10 +31,10 @@ class Go extends Command
      */
     public function handle()
     {
-        $products = Product::query()->first();
+        $product = Product::query()->first();
 
 
 
-        dd($products->images);
+        dd($product->images);
     }
 }

@@ -25,7 +25,7 @@ export default {
                 images: [],
                 //params:[],
             },
-            imagesView:[],
+            imagesView: [],
         }
     },
 
@@ -43,17 +43,8 @@ export default {
                 .then(res => {
 
 
-                    this.entries.product = {
-                        title: '',
-                        description: null,
-                        content: null,
-                        price: null,
-                        old_price: null,
-                        category_id: null,
-                        product_group_id: null,
-
-
-                    }
+                    this.entries.product = {};
+                    this.imagesView = [];
 
 
                 })
@@ -77,21 +68,16 @@ export default {
 
             this.entries.images = e.target.files
 
-            for (let i =0; i< this.entries.images.length; i++){
+            for (let i = 0; i < this.entries.images.length; i++) {
                 this.imagesView[i] = {
-                    'item':i,
-                    'url':URL.createObjectURL(this.entries.images[i]),
+                    'item': i,
+                    'url': URL.createObjectURL(this.entries.images[i]),
                 };
             }
+
             console.log(this.entries.images)
         },
-        deleteImage(image, e){
 
-            this.imagesView.splice(image.item, 1)
-            this.entries.images.splice(image.item, 1)
-            ;
-            e.target.files.splice(image.item, 1)
-        }
 
     }
 
@@ -157,7 +143,7 @@ export default {
                                placeholder="Enter QTY" required="">
                     </div>
                     <div>
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">QTY</label>
+                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Article</label>
                         <input v-model="entries.product.article" type="text" name="product-name" id="product-name"
                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                placeholder="Enter article" required="">
@@ -208,12 +194,18 @@ export default {
 
 
                     <div>
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Select
-                            Images</label>
-                        <input type="file"
-                               multiple
-                               @change="addImages"
-                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
+                        <!--          File Upload              -->
+                        <div class="rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md w-36">
+                            <label for="upload" class="flex flex-col items-center gap-2 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 fill-white stroke-indigo-500"
+                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <span class="text-gray-600 font-medium">Upload file</span>
+                            </label>
+                            <input multiple id="upload" type="file" class="hidden" @change="addImages"/>
+                        </div>
                     </div>
                     <div class="p-6 border-t border-gray-200 rounded-b">
 
@@ -234,9 +226,7 @@ export default {
         <div class="">
             <div v-for="image in imagesView" class="flex">
                 <div class="py-4 px-2">
-                    <button @click="deleteImage(image)" class=" border bg-red-600 text-white right-0">
-                        Delete
-                    </button>
+
                     <img :src="image.url" alt="" class="">
                 </div>
 
@@ -245,11 +235,6 @@ export default {
         </div>
 
     </div>
-
-
-
-
-
 
 
 </template>

@@ -33,7 +33,7 @@ class UpdateRequest extends FormRequest
             'product.old_price' => 'numeric',
             'product.qty' => 'required|integer',
             'product.article' => 'required|string',
-            'images' => 'nullable|array',
+            'images' => 'nullable|array|unique:products,article',
             'images.*' => 'required|file',
         ];
     }

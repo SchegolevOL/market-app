@@ -3,14 +3,16 @@
 namespace App\Services;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 
 class CategoryService
 {
 
     public static function store(array $data): Category
     {
-        $category = Category::create($data['category']);
 
+        $category = Category::create($data['category']);
+        ImageService::storeBatch($category, $data);
         return $category;
     }
 
@@ -36,5 +38,23 @@ class CategoryService
             ];
         }
         return array_reverse($breadcrumbs);
+    }
+
+    public static function delete(Category $category)
+    {
+        $images = $category->images;
+        try {
+            DB::beginTransaction();
+            $category->delete();
+            DB::commit();
+
+        }catch (\Exception $exception){
+            DB::rollBack();
+        }
+
+        foreach ($images as $image) {
+            ImageService::destroy($image);
+        }
+
     }
 }

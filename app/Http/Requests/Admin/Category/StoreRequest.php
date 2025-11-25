@@ -27,6 +27,8 @@ class StoreRequest extends FormRequest
         return [
             'category.title' => 'required|string|max:255',
             'category.parent_id' => 'nullable|integer|exists:categories,id',
+            'images'=>'nullable|array',
+            'images.*' => 'required|file',
 
         ];
     }

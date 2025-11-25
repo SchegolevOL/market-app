@@ -85,6 +85,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        CategoryService::delete($category);
         $category->delete();
         return response([
             'message' => 'Category deleted successfully'
