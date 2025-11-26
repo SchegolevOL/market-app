@@ -54,7 +54,6 @@ export default {
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">id</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
             </tr>
             </thead>
@@ -64,7 +63,6 @@ export default {
                 <Link :href="route('admin.product-groups.show', productGroup)">
                     <td class="px-6 py-4 whitespace-nowrap">{{productGroup.title}}</td>
                 </Link>
-                <td class="px-6 py-4 whitespace-nowrap">{{productGroup.category_title}}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <Link :href="route('admin.product-groups.edit', productGroup)"
                         class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">

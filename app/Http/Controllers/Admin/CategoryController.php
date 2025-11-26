@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Category\StoreRequest;
 use App\Http\Requests\Admin\Category\UpdateRequest;
 use App\Http\Resources\Category\CategoryResource;
-use App\Http\Resources\Category\CategoryViewResource;
 use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Http\Response;
@@ -51,7 +50,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $category = CategoryViewResource::make($category)->resolve();
+        $category = CategoryResource::make($category)->resolve();
         return inertia('Admin/Category/Show', compact('category'));
     }
 

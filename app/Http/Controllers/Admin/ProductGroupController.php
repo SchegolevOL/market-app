@@ -31,9 +31,8 @@ class ProductGroupController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
-        $categories =CategoryResource::collection($categories)->resolve();
-        return inertia('Admin/ProductGroup/Create', compact('categories'));
+
+        return inertia('Admin/ProductGroup/Create');
     }
 
     /**
@@ -62,10 +61,8 @@ class ProductGroupController extends Controller
      */
     public function edit(ProductGroup $productGroup)
     {
-        $categories = Category::all();
-        $categories =CategoryResource::collection($categories)->resolve();
         $productGroup = ProductGroupResource::make($productGroup)->resolve();
-        return inertia('Admin/ProductGroup/Edit', compact('productGroup', 'categories'));
+        return inertia('Admin/ProductGroup/Edit', compact('productGroup'));
     }
 
     /**

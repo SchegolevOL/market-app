@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'category_id' => 'required|integer',
+
         ];
     }
 }

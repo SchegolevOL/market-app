@@ -13,24 +13,18 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 1; $i <= 5; $i++) {
-            $category = Category::query()->create([
-                'title' => "Category $i",
-            ]);
-            for ($j = 1; $j <= 5; $j++) {
-                $category1 = Category::query()->create([
-                    'title' => "Category $i.$j",
-                    'parent_id' => $category->id,
-                ]);
-            }
-            for ($z = 1; $z <= 5; $z++) {
-                $category2 = Category::query()->create([
-                    'title' => "Category $i.$j.$z",
-                    'parent_id' => $category1->id,
-                ]);
-            }
 
-        }
+            $category = Category::query()->create([
+                'title' => "Продукты",
+            ]);
+            $category = Category::query()->create([
+                'title' => "Одежда",
+            ]);
+            $category = Category::query()->create([
+                'title' => "Инструмент",
+            ]);
+
+
 
     }
 }

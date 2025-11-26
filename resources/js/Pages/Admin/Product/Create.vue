@@ -124,60 +124,70 @@ export default {
                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                   placeholder="Enter content" required=""></textarea>
                     </div>
-                    <div>
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Price</label>
-                        <input v-model="entries.product.price" type="number" name="product-name" id="product-name"
-                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                               placeholder="Enter price" required="">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Price</label>
+                            <input v-model="entries.product.price" type="number" name="product-name" id="product-name"
+                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                   placeholder="Enter price" required="">
+                        </div>
+                        <div>
+                            <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Old
+                                Price</label>
+                            <input v-model="entries.product.old_price" type="number" name="product-name"
+                                   id="product-name"
+                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                   placeholder="Enter old price" required="">
+                        </div>
+                        <div>
+                            <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">QTY</label>
+                            <input v-model="entries.product.qty" type="number" name="product-name" id="product-name"
+                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                   placeholder="Enter QTY" required="">
+                        </div>
                     </div>
-                    <div>
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Old Price</label>
-                        <input v-model="entries.product.old_price" type="number" name="product-name" id="product-name"
-                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                               placeholder="Enter old price" required="">
-                    </div>
-                    <div>
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">QTY</label>
-                        <input v-model="entries.product.qty" type="number" name="product-name" id="product-name"
-                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                               placeholder="Enter QTY" required="">
-                    </div>
-                    <div>
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Article</label>
-                        <input v-model="entries.product.article" type="text" name="product-name" id="product-name"
-                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                               placeholder="Enter article" required="">
-                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label for="product-name"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Article</label>
+                            <input v-model="entries.product.article" type="text" name="product-name" id="product-name"
+                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                   placeholder="Enter article" required="">
+                        </div>
 
 
-                    <div class="col-span-6 sm:col-span-3 py-4">
-                        <label for="product_parent"
-                               class="text-sm font-medium text-gray-900 block mb-2">Category</label>
+                        <div class="">
+                            <label for="product_parent"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Category</label>
 
-                        <select v-model="entries.product.category_id"
-                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                id="service" name="service">
-                            <option :value="null" selected disabled>Select Category</option>
-                            <option v-for="category in categories" :value="category.id">{{ category.title }}</option>
+                            <select v-model="entries.product.category_id"
+                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                    id="service" name="service">
+                                <option :value="null" selected disabled>Select Category</option>
+                                <option v-for="category in categories" :value="category.id">{{
+                                        category.title
+                                    }}
+                                </option>
 
-                        </select>
+                            </select>
 
-                    </div>
-                    <div class="col-span-6 sm:col-span-3 py-4">
-                        <label for="product_parent"
-                               class="text-sm font-medium text-gray-900 block mb-2">Product Group</label>
+                        </div>
+                        <div class="">
+                            <label for="product_parent"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Product Group</label>
 
-                        <select v-model="entries.product.product_group_id"
-                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                id="service" name="service">
-                            <option :value="null" selected disabled>Select Product Parent</option>
-                            <option v-for="productGroup in productGroups" :value="productGroup.id">{{
-                                    productGroup.title
-                                }}
-                            </option>
+                            <select v-model="entries.product.product_group_id"
+                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                    id="service" name="service">
+                                <option :value="null" selected disabled>Select Product Parent</option>
+                                <option v-for="productGroup in productGroups" :value="productGroup.id">{{
+                                        productGroup.title
+                                    }}
+                                </option>
 
-                        </select>
+                            </select>
 
+                        </div>
                     </div>
                     <!--Params-->
                     <!--                    <div class="col-span-6 sm:col-span-3 py-4">
@@ -193,7 +203,7 @@ export default {
                                         </div>-->
 
 
-                    <div>
+                    <div class="py-4">
                         <!--          File Upload              -->
                         <div class="rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md w-36">
                             <label for="upload" class="flex flex-col items-center gap-2 cursor-pointer">

@@ -156,11 +156,16 @@ export default {
         </div>
         <div class="">
             <!--        Image output        -->
+            <div v-if="imagesView.length !==0" >
+            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <h1>Preload new Images</h1>
+            </div>
             <div v-for="image in imagesView" class="flex">
                 <div class="py-4 px-2">
                     <img :src="image.url" alt="" class="">
                 </div>
 
+            </div>
             </div>
         </div>
 
