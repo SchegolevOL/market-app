@@ -12,15 +12,15 @@ class CategoryService
     {
 
         $category = Category::create($data['category']);
-        ImageService::storeBatch($category, $data);
+        ImageService::storeBatch($category, $data['images']);
         return $category;
     }
 
     public static function update(Category $category, array $data): Category
     {
 
-        $category->update($data);
-
+        $category->update($data['category']);
+        ImageService::storeBatch($category, $data['images']);
         return $category->fresh();
     }
 

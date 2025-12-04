@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Role\RoleEnum;
+use App\Models\Param;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -19,15 +20,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $user = [
-                'name' => 'admin',
-                'email' => 'admin@mail.com',
-                'password' => Hash::make('123123'),
-            ];
-        $user = User::query()->firstOrCreate(['email'=>$user['email']],$user);
-        $role = Role::query()->firstOrCreate(['title'=>RoleEnum::ADMIN->value]);
+            'name' => 'admin',
+            'email' => 'admin@mail.com',
+            'password' => Hash::make('123123'),
+        ];
+        $user = User::query()->firstOrCreate(['email' => $user['email']], $user);
+        $role = Role::query()->firstOrCreate(['title' => RoleEnum::ADMIN->value]);
         $user->roles()->sync([$role->id]);
         $this->call([
-CategorySeeder::class,
+            CategorySeeder::class,
+            ParamSeed::class,
+            ProductGroupSeed::class,
         ]);
     }
 }

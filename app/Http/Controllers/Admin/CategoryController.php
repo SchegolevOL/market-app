@@ -39,7 +39,7 @@ class CategoryController extends Controller
     {
 
 
-        $data = $request->validated();
+        $data = $request->validationData();
 
         $category = CategoryService::store($data);
         return CategoryResource::make($category)->resolve();
@@ -72,7 +72,7 @@ class CategoryController extends Controller
     public function update(UpdateRequest $request, Category $category)
     {
 
-        $data = $request->validated();
+        $data = $request->validationData();
 
         $category = CategoryService::update($category, $data);
     ;

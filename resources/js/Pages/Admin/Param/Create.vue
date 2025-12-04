@@ -1,11 +1,13 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import WindowSuccessMessage from "@/Components/MyComponents/WindowSuccessMessage.vue";
 
 
 export default {
     name: "Create",
     components: {
+        WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
@@ -14,35 +16,46 @@ export default {
     },
     data() {
         return {
-            emit: {
+            entries: {
                 param: {
                     title: null,
                     filter_type: null,
 
                 },
             },
-
+            success: false,
 
         }
     },
     methods: {
         storeParam() {
 
-            axios.post(route('admin.params.store'), this.emit)
+            axios.post(route('admin.params.store'), this.entries)
                 .then(res => {
-                        this.emit.param = {
+                        this.entries.param = {
                             filter_type: null
                         };
+                        this.$nextTick(() => {
+                            this.success = true;
+                        });
                     }
                 )
         },
         storeParamToIndex() {
-            axios.post(route('admin.params.store'), this.emit)
+            axios.post(route('admin.params.store'), this.entries)
                 .then(res => {
                     window.location.replace(route('admin.params.index'));
                 })
         },
 
+    },
+    watch: {
+        entries: {
+            handler(new_val, old_val) {
+                this.success = false;
+            },
+            deep: true
+        }
     }
 
 
@@ -76,7 +89,7 @@ export default {
                     <div class="">
                         <div class="col-span-6 sm:col-span-3">
                             <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
-                            <input v-model="emit.param.title" type="text" name="product-name" id="product-name"
+                            <input v-model="entries.param.title" type="text" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter Title”" required="">
                         </div>
@@ -85,7 +98,7 @@ export default {
                             <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Filter
                                 Type</label>
 
-                            <select v-model="emit.param.filter_type"
+                            <select v-model="entries.param.filter_type"
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                     id="service" name="service">
                                 <option selected disabled>Select Filter Type</option>
@@ -121,9 +134,11 @@ export default {
             <!--        Image output        -->
 
         </div>
+        <div v-if="success">
+            <WindowSuccessMessage :message="'Param Success Create'"/>
+        </div>
 
     </div>
-
 
 
 </template>

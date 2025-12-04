@@ -1,11 +1,13 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import WindowSuccessMessage from "@/Components/MyComponents/WindowSuccessMessage.vue";
 
 
 export default {
     name: "Create",
     components: {
+        WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
@@ -24,6 +26,7 @@ export default {
 
             },
             imagesView: [],
+            success:false,
         }
     },
 
@@ -38,12 +41,13 @@ export default {
                 }
             })
                 .then(res => {
-
                    this.entries.category = {
                         parent_id: null
                     };
                     this.imagesView=[];
-                    console.log(this.categories);
+                   this.$nextTick(()=>{
+                       this.success = true;
+                   })
 
                 })
 
@@ -68,8 +72,16 @@ export default {
             }
 
         },
-    }
 
+    },
+    watch:{
+        entries:{
+            handler(new_val, old_val){
+                this.success = false
+            },
+            deep: true
+        }
+    }
 
 }
 </script>
@@ -168,7 +180,9 @@ export default {
             </div>
             </div>
         </div>
-
+        <div v-if="success">
+            <WindowSuccessMessage :message="'Success Update Product'"/>
+        </div>
     </div>
 
 

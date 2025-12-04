@@ -32,5 +32,12 @@ class StoreRequest extends FormRequest
 
         ];
     }
-
+    protected function passedValidation()
+    {
+        $validated = $this->validated();
+        return $this->merge([
+            'category' => $validated['category'],
+            'images'=> $this->images ?? [],
+        ]);
+    }
 }

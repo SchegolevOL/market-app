@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Product\StoreRequest;
 use App\Http\Requests\Admin\Product\UpdateRequest;
 use App\Http\Resources\Category\CategoryResource;
+use App\Http\Resources\Param\ParamResource;
+use App\Http\Resources\Product\ProductCategoryResource;
 use App\Http\Resources\Product\ProductResource;
 use App\Http\Resources\ProductGroup\ProductGroupResource;
 use App\Models\Category;
+use App\Models\Param;
 use App\Models\Product;
 use App\Models\ProductGroup;
 use App\Models\ProductParent;
@@ -22,7 +25,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::query()->whereNull('parent_id')->get();
         $products =ProductResource::collection($products)->resolve();
         return inertia('Admin/Product/Index', compact('products'));
     }
@@ -34,11 +37,12 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $categories =CategoryResource::collection($categories)->resolve();
-
+        $params = Param::all();
+        $params =ParamResource::collection($params)->resolve();
         $productGroups = ProductGroup::all();
         $productGroups =ProductGroupResource::collection($productGroups)->resolve();
 
-        return inertia('Admin/Product/Create', compact('categories','productGroups'));
+        return inertia('Admin/Product/Create', compact('categories','productGroups', 'params'));
     }
 
     /**
@@ -47,7 +51,8 @@ class ProductController extends Controller
     public function store(StoreRequest $request)
     {
 
-        $data = $request->validated();
+        $data = $request->validationData();
+
         $product = ProductService::store($data);
         return ProductResource::make($product)->resolve();
     }
@@ -57,7 +62,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product = ProductResource::make($product)->resolve();
+        $product = ProductCategoryResource::make($product)->resolve();
         return inertia('Admin/Product/Show', compact('product'));
     }
 
@@ -68,11 +73,13 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $categories =CategoryResource::collection($categories)->resolve();
-
+        $params = Param::all();
+        $params =ParamResource::collection($params)->resolve();
         $productGroups = ProductGroup::all();
         $productGroups =ProductGroupResource::collection($productGroups)->resolve();
         $product = ProductResource::make($product)->resolve();
-        return inertia('Admin/Product/Edit', compact('product', 'categories','productGroups'));
+
+        return inertia('Admin/Product/Edit', compact('product', 'categories','productGroups', 'params'));
     }
 
     /**
@@ -81,7 +88,7 @@ class ProductController extends Controller
     public function update(UpdateRequest $request, Product $product)
     {
 
-        $data = $request->validated();
+        $data = $request->validationData();
 
         $product = ProductService::update($product, $data);
         return ProductResource::make($product)->resolve();
@@ -97,5 +104,23 @@ class ProductController extends Controller
         return response([
             'message' => 'Product deleted successfully'
         ], Response::HTTP_OK);
+    }
+
+    public function createChild(Product $product)
+    {
+        $categories = Category::all();
+        $categories =CategoryResource::collection($categories)->resolve();
+        $params = Param::all();
+        $params =ParamResource::collection($params)->resolve();
+        $productGroups = ProductGroup::all();
+        $productGroups =ProductGroupResource::collection($productGroups)->resolve();
+        $product = ProductResource::make($product)->resolve();
+        return inertia('Admin/Product/CreateChild', compact('categories','productGroups', 'params', 'product'));
+    }
+
+    public function indexChild(Product $product)
+    {
+        return ProductResource::collection($product->children)->resolve();
+
     }
 }

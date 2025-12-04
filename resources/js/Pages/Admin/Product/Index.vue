@@ -1,31 +1,39 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import ProductItem from "@/Components/Admin/Product/ProductItem.vue";
 
 
 export default {
     name: "Index",
     layout: AdminLayout,
-    components:{
+    components: {
+        ProductItem,
         Link,
     },
-    props:{
-        products:Array,
+    props: {
+        products: Array,
     },
-    data(){
-        return{
-           productsData: this.products
+    data() {
+        return {
+            productsData: this.products,
+            productsChildrenData: []
         }
     },
-    methods:{
-        deleteProduct(product)
-        {
-            console.log(this.product)
-            axios.delete(route('admin.products.destroy', product.id))
-                .then(res=>{
-                    this.productsData = this.productsData.filter(productData=> productData.id !== product.id)
+    methods: {
+        updateProductsData(product) {
+            if (product.parent_id){
+                this.productsData.forEach(productData=>{
+                    if (productData.id === product.parent_id){
+                        productData.children = productData.children.filter(child=> child.id !== product.id)
+                    }
                 })
-        }
+                return
+            }
+            this.productsData = this.productsData.filter(productData => productData.id !== product.id)
+        },
+
+
     }
 }
 </script>
@@ -42,9 +50,9 @@ export default {
     <div class="container mx-auto px-4 ">
 
         <Link :href="route('admin.products.create')"
-               class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
-        Create Product
-    </Link>
+              class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
+            Create Product
+        </Link>
 
         <table class="min-w-full divide-y divide-gray-200">
             <thead>
@@ -54,28 +62,16 @@ export default {
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">QTY</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
             </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="product in productsData">
-                <td class="px-6 py-4 whitespace-nowrap">{{product.id}}</td>
-                <Link :href="route('admin.products.show', product)">
-                    <td class="px-6 py-4 whitespace-nowrap">{{product.title}}</td>
-                </Link>
-                <td class="px-6 py-4 whitespace-nowrap">{{product.price}}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{product.qty}}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <Link :href="route('admin.products.edit', product)"
-                        class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">
-                        Edit
-                    </Link>
-                    <button @click="deleteProduct(product)"
-                        class="ml-2 px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
+            <template v-for="product in productsData">
+                <ProductItem :product @product_deleted='updateProductsData'></ProductItem>
+                <template v-if="product.children" v-for="productChild in product.children">
+                    <ProductItem :product = "productChild" :is-child = "true" @product_deleted='updateProductsData' ></ProductItem>
+                </template>
+            </template>
             </tbody>
         </table>
     </div>

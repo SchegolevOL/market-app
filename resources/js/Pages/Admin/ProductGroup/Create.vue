@@ -1,11 +1,13 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import WindowSuccessMessage from "@/Components/MyComponents/WindowSuccessMessage.vue";
 
 
 export default {
     name: "Create",
     components: {
+        WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
@@ -20,7 +22,7 @@ export default {
 
 
                 },
-
+                success:false,
 
 
         }
@@ -39,7 +41,9 @@ export default {
                         title:'',
 
                     };
-
+                    this.$nextTick(()=>{
+                        this.success = true;
+                    })
 
 
                 })
@@ -54,6 +58,14 @@ export default {
                 )
         },
 
+    },
+    watch:{
+        productGroup:{
+            handler(new_val, old_val){
+                this.success=false;
+            },
+            deep:true
+        }
     }
 
 
@@ -105,6 +117,9 @@ export default {
         <div class="">
             <!--        Image output        -->
 
+        </div>
+        <div v-if="success">
+            <WindowSuccessMessage :message="'Product Group Success Create'"/>
         </div>
 
     </div>

@@ -14,14 +14,16 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
 
-            $category = Category::query()->create([
-                'title' => "Продукты",
-            ]);
-            $category = Category::query()->create([
+            $category1 = Category::query()->create([
                 'title' => "Одежда",
             ]);
-            $category = Category::query()->create([
-                'title' => "Инструмент",
+            $category2 = Category::query()->create([
+                'parent_id' => $category1->id,
+                'title' => "Женская одежда",
+            ]);
+            $category3 = Category::query()->create([
+                'parent_id' => $category1->id,
+                'title' => "Мужская одежда",
             ]);
 
 

@@ -24,10 +24,19 @@ class UpdateRequest extends FormRequest
     {
 
         return [
-            'title' => 'required|string|max:255',
-            'parent_id' => 'nullable|integer|exists:categories,id',
+            'category.title' => 'required|string|max:255',
+            'category.parent_id' => 'nullable|integer|exists:categories,id',
+            'images'=>'nullable|array',
+            'images.*' => 'required|file',
         ];
     }
-
+    protected function passedValidation()
+    {
+        $validated = $this->validated();
+        return $this->merge([
+            'category'=> $validated['category'],
+            'images'=> $this->images ?? [],
+        ]);
+    }
 
 }

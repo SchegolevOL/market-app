@@ -8,7 +8,7 @@ use App\Http\Resources\Param\ParamWithsPivotValueResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductResource extends JsonResource
+class ProductCategoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,9 +19,8 @@ class ProductResource extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'product_group_id' => $this->product_group_id,
-            'category_id' => $this->category_id,
-            'parent_id' => $this->parent_id,
+            'product_group' => $this->productGroup,
+            'category' => $this->category,
             'title' => $this->title,
             'description' => $this->description,
             'content' => $this->content,

@@ -16,10 +16,12 @@ export default {
     data() {
         return {
             entries: {
-                category: {},
+                category: this.category,
                 images: [],
+                _method:'patch',
             },
             imagesView: [],
+
         }
     },
 
@@ -28,11 +30,24 @@ export default {
         updateCategory() {
 
 
-            axios.patch(route('admin.categories.update', this.category), this.category)
-                .then(res => {
+            axios.post(route('admin.categories.update', this.entries.category.id), this.entries, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+
+            }).then(res => {
 
 
-                })
+                this.entries.category = res.data;
+                this.entries.images = [];
+
+
+                this.imagesView = [];
+                this.$refs.image_input.value = null;
+
+
+
+            })
         },
         updateCategoryToIndex() {
             axios.post(route('admin.categories.update'), this.category)
@@ -44,14 +59,34 @@ export default {
         },
 
         addImages(e) {
-
-            this.entries.images = e.target.files
-
+            var tmp = Array.from(e.target.files)
+            this.entries.images = this.entries.images.concat(tmp)
+            console.log(this.entries.images)
             for (let i = 0; i < this.entries.images.length; i++) {
-                this.imagesView[i] = URL.createObjectURL(this.entries.images[i]);
-
+                this.imagesView[i] = {
+                    'item': i,
+                    'url': URL.createObjectURL(this.entries.images[i]),
+                };
             }
 
+        },
+        deleteImage(image) {
+            axios.delete(route('admin.images.destroy', image.id)).then(
+                res => {
+                    console.log(this.entries.category.images);
+                    console.log(image);
+
+                    this.entries.category.images = this.entries.category.images.filter(categoryImage => categoryImage.id !== image.id)
+                    console.log(this.entries.category.images);
+                    this.imagesView = [];
+
+                }
+            )
+        },
+        deleteImagePreview(image) {
+            this.entries.images.splice(image.item, 1)
+            this.imagesView.splice(image.item, 1)
+            console.log(this.entries.images);
         },
     }
 
@@ -85,8 +120,8 @@ export default {
 
             <div class="">
                 <div>
-                    <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
-                    <input v-model="category.title" type="text" name="product-name" id="product-name"
+                    <label for="category-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
+                    <input v-model="category.title" type="text" name="category-name" id="category-name"
                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                            placeholder="Enter Title”" required="">
                 </div>
@@ -115,18 +150,18 @@ export default {
                             </svg>
                             <span class="text-gray-600 font-medium">Upload file</span>
                         </label>
-                        <input multiple id="upload" type="file" class="hidden" @change="addImages"/>
+                        <input ref="image_input" multiple id="upload" type="file" class="hidden" @change="addImages"/>
                     </div>
                 </div>
                 <div class="p-6 border-t border-gray-200 rounded-b">
 
                     <button @click.prevent="updateCategory"
                             class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Create
+                            type="submit">Update
                     </button>
                     <button @click.prevent="updateCategoryToIndex"
                             class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Create to Index
+                            type="submit">Update to Index
                     </button>
                 </div>
             </div>
@@ -135,38 +170,46 @@ export default {
         </div>
 
         <div class="">
-            <!--        Image output        -->
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <!--        Images   -->
+            <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <h1>Images</h1>
             </div>
-            <div v-for="image in category.images" class="">
-
-                <img :src="image.url" alt="" class="">
-            </div>
-
-        </div>
-        <div class="grid grid-cols-2">
-        <div v-if="imagesView.length !==0" >
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <h1>Preload new Images</h1>
-            </div>
-            <div class="py-4">
-
-
-                <div v-for="image in imagesView" class="">
-                    <button @click.prevent="deleteImage(image)" class="flex border bg-red-600 text-white right-0">
-                        Delete
-                    </button>
-
-                    <div class="py-4">
-                        <img :src="image" alt="" class="">
+            <div v-for="image in entries.category.images" class="relative">
+                <div class="py-4 px-2 w-52">
+                    <div class="">
+                        <img :src="image.url" alt="" class="">
+                        <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
+                            <button @click.prevent="deleteImage(image)"
+                                    class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
+                                X
+                            </button>
+                        </div>
                     </div>
+                </div>
+            </div>
 
+            <div v-if="imagesView.length!==0">
+                <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <h1>Images Preview</h1>
+                </div>
+                <!--        Images View  Preview   -->
+                <div v-for="image in imagesView" class="relative">
+                    <div class="py-4 px-2 w-52">
+                        <div class="">
+                            <img :src="image.url" alt="" class="">
+                            <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
+                                <button @click.prevent="deleteImagePreview(image)"
+                                        class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
+                                    X
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
-    </div>
+
     </div>
 
 

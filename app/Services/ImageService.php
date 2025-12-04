@@ -13,7 +13,7 @@ class ImageService
     public static function storeBatch(Model $model, array $data)
     {
 
-        foreach ($data['images'] as $image) {
+        foreach ($data as $image) {
 
             $model->images()->create([
                 'path' => Storage::disk('public')->put('images/' . strtolower(class_basename($model)), $image),

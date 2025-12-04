@@ -1,11 +1,13 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import WindowSuccessMessage from "@/Components/MyComponents/WindowSuccessMessage.vue";
 
 
 export default {
     name: "Edit",
     components: {
+        WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
@@ -15,6 +17,15 @@ export default {
 
         },
     },
+    data(){
+        return{
+
+                productGroup: this.productGroup,
+
+
+            success: false,
+        }
+    },
 
     methods: {
         updateProductGroup() {
@@ -22,9 +33,11 @@ export default {
 
             axios.patch(route('admin.product-groups.update', this.productGroup), this.productGroup)
                 .then(res => {
+                    this.$nextTick(()=>{
+                        this.success=true;
+                    });
 
-
-                })
+                });
         },
         updateProductGroupToIndex() {
             axios.patch(route('admin.product-groups.update', this.productGroup), this.productGroup)
@@ -35,6 +48,14 @@ export default {
                 )
         },
 
+    },
+    watch:{
+        productGroup:{
+            handler(new_val, old_val){
+                this.success = false;
+            },
+            deep:true
+        }
     }
 
 
@@ -87,7 +108,9 @@ export default {
             <!--        Image output        -->
 
         </div>
-
+<div v-if="success">
+    <WindowSuccessMessage :message="'Product Group Success Update'"/>
+</div>
     </div>
 
 

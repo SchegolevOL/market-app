@@ -12,18 +12,22 @@ export default {
     props: {
         categories: Array,
         productGroups: Array,
+        params: Array,
     },
     data() {
         return {
+            paramOption: {
+                paramObject: {},
+            },
             entries: {
                 product: {
                     category_id: null,
                     product_group_id: null,
-
+                    param: null,
 
                 },
                 images: [],
-                //params:[],
+                params: [],
             },
             imagesView: [],
         }
@@ -43,9 +47,18 @@ export default {
                 .then(res => {
 
 
-                    this.entries.product = {};
-                    this.imagesView = [];
+                    this.entries = {
+                        product: {
+                            category_id: null,
+                            product_group_id: null,
+                            param: null,
 
+                        },
+                        images: [],
+                        params: [],
+                    };
+                    this.imagesView = [];
+                    this.$refs.image_input.value = null;
 
                 })
 
@@ -65,9 +78,10 @@ export default {
                 )
         },
         addImages(e) {
-
-            this.entries.images = e.target.files
-
+            console.log(e.target.files);
+            var tmp = Array.from(e.target.files)
+            this.entries.images = this.entries.images.concat(tmp)
+            console.log(this.entries.images)
             for (let i = 0; i < this.entries.images.length; i++) {
                 this.imagesView[i] = {
                     'item': i,
@@ -75,9 +89,35 @@ export default {
                 };
             }
 
-            console.log(this.entries.images)
-        },
 
+        },
+        setParam() {
+            var param = {
+                id: this.paramOption.paramObject.id,
+                title: this.paramOption.paramObject.title,
+                value: this.paramOption.value,
+
+            }
+            console.log(!this.entries.params.includes(param))
+            if (this.entries.params.every(enParam=>enParam.id !== param.id||enParam.value !== param.value))
+            {
+                this.entries.params.push(param)
+                this.paramOption = {paramObject: {}}
+            }
+
+
+        },
+        deleteImage(image) {
+            this.entries.images.splice(image.item, 1)
+            this.imagesView.splice(image.item, 1)
+            console.log(this.entries.images);
+        },
+        deleteParam(paramEntries){
+            console.log(paramEntries);
+            this.entries.params = this.entries.params.filter(param=> param.id !== paramEntries.id || param.value !== paramEntries.value)
+            console.log(this.entries.params);
+
+        },
 
     }
 
@@ -150,7 +190,7 @@ export default {
                         <div>
                             <label for="product-name"
                                    class="text-sm font-medium text-gray-900 block mb-2">Article</label>
-                            <input v-model="entries.product.article" type="text" name="product-name" id="product-name"
+                            <input v-model="entries.product.article" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter article" required="">
                         </div>
@@ -190,18 +230,66 @@ export default {
                         </div>
                     </div>
                     <!--Params-->
-                    <!--                    <div class="col-span-6 sm:col-span-3 py-4">
-                                            <label for="product_parent"
-                                                   class="text-sm font-medium text-gray-900 block mb-2">Product Group</label>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label for="product_parent"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Select Param</label>
 
-                                            <select v-model="entries.params"
-                                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
-                                                <option :value="null" selected disabled>Select Product Parent</option>
-                                                <option v-for="productGroup in productGroups" :value="productGroup.id">{{ productGroup.title }}</option>
-                                            </select>
+                            <select v-model="paramOption.paramObject"
+                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
+                                <option :value="{}" selected disabled>Select Product Parent</option>
+                                <option v-for="param in params" :value="param">{{
+                                        param.title
+                                    }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="product_parent"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                            <input v-model="paramOption.value"
+                                   type="text"
+                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                   placeholder="Enter Value" required="">
+                        </div>
+                        <div>
+                            <label for="product_parent"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                            <a href="#"
+                               @click.prevent="setParam"
+                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block p-2 w-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                     class="size-6">
+                                    <path fill-rule="evenodd"
+                                          d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
+                                          clip-rule="evenodd"/>
+                                </svg>
 
-                                        </div>-->
 
+                            </a>
+
+
+                        </div>
+
+                    </div>
+                    <div>
+                        <div class="container mx-auto p-6">
+                            <div class="flex flex-wrap gap-2">
+                                <div v-for="paramEntries in entries.params">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                    {{ paramEntries.title }} - {{ paramEntries.value }}
+                                    <button @click.prevent="deleteParam(paramEntries)" type="button" class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
+                                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                             fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="py-4">
                         <!--          File Upload              -->
@@ -214,7 +302,8 @@ export default {
                                 </svg>
                                 <span class="text-gray-600 font-medium">Upload file</span>
                             </label>
-                            <input multiple id="upload" type="file" class="hidden" @change="addImages"/>
+                            <input ref="image_input" multiple id="upload" type="file" class="hidden"
+                                   @change="addImages"/>
                         </div>
                     </div>
                     <div class="p-6 border-t border-gray-200 rounded-b">
@@ -233,15 +322,25 @@ export default {
 
             </div>
         </div>
+
         <div class="">
-            <div v-for="image in imagesView" class="flex">
-                <div class="py-4 px-2">
-
-                    <img :src="image.url" alt="" class="">
-                </div>
-
+            <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <h1>Images</h1>
             </div>
-
+            <!--        Images View     -->
+            <div v-for="image in imagesView" class="relative">
+                <div class="py-4 px-2 w-80">
+                    <div class="">
+                        <img :src="image.url" alt="" class="">
+                        <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
+                            <button @click.prevent="deleteImage(image)"
+                                    class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
+                                X
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>

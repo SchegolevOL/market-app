@@ -5,17 +5,17 @@ import WindowSuccessMessage from "@/Components/MyComponents/WindowSuccessMessage
 
 
 export default {
-    name: "Edit",
+    name: "CreateChild",
     components: {
         WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
     props: {
-        product: {},
         categories: Array,
         productGroups: Array,
         params: Array,
+        product:{},
     },
     data() {
         return {
@@ -24,88 +24,70 @@ export default {
             },
             entries: {
                 product: this.product,
-
                 images: [],
                 params: this.product.params,
-                _method: 'patch',
             },
             imagesView: [],
             success: false,
 
-
         }
-
-
     },
 
 
     methods: {
-        updateProduct() {
+        storeProduct() {
 
-
-            console.log(this.entries);
-
-            axios.post(route('admin.products.update', this.entries.product.id), this.entries, {
+            this.entries.product.parent_id=this.product.id;
+            axios.post(route('admin.products.store'), this.entries, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
 
-            }).then(res => {
+            })
+                .then(res => {
 
 
-                this.entries.product = res.data;
-                this.entries.images = [];
+                    this.entries.product = res.data;
+                    this.entries.images = [];
+                    this.imagesView = [];
+                    this.$refs.image_input.value = null;
 
-                console.log(this.entries.product);
-                this.imagesView = [];
-                this.$refs.image_input.value = null;
+                    this.$nextTick(() => {
 
-                this.$nextTick(() => {
+                        this.success = true;
+                    })
+                    this.$refs.image_input.value = null;
 
-                    this.success = true;
                 })
 
-            })
-
         },
-        updateProductToIndex() {
-            axios.post(route('admin.products.update', this.entries.product.id), this.entries, {
+        storeProductToIndex() {
+
+            console.log(this.entries)
+            axios.post(route('admin.products.store'), this.entries, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
-
-            }).then(res => {
-                window.location.replace(route('admin.products.index'));
             })
+                .then(function () {
+                        window.location.replace(route('admin.products.index'));
+
+                    }
+                )
         },
         addImages(e) {
+
             var tmp = Array.from(e.target.files)
             this.entries.images = this.entries.images.concat(tmp)
-            console.log(this.entries.images)
+            console.log(this.entries.images);
             for (let i = 0; i < this.entries.images.length; i++) {
                 this.imagesView[i] = {
                     'item': i,
                     'url': URL.createObjectURL(this.entries.images[i]),
                 };
             }
+            this.$refs['image_input'].value=null;
 
-        },
-        deleteImage(image) {
-            axios.delete(route('admin.images.destroy', image.id)).then(
-                res => {
-
-
-                    this.entries.product.images = this.entries.product.images.filter(productImage => productImage.id !== image.id)
-
-                    this.imagesView = [];
-
-                }
-            )
-        },
-        deleteImagePreview(image) {
-            this.entries.images.splice(image.item, 1)
-            this.imagesView.splice(image.item, 1)
-            console.log(this.entries.images);
         },
         setParam() {
             var param = {
@@ -115,22 +97,28 @@ export default {
 
             }
 
-            if (this.entries.params.every(enParam => enParam.id !== param.id || enParam.value !== param.value)) {
+            if (this.entries.params.every(enParam=>enParam.id !== param.id||enParam.value !== param.value))
+            {
                 this.entries.params.push(param)
                 this.paramOption = {paramObject: {}}
             }
 
 
         },
-        deleteParam(paramEntries) {
+        deleteImage(image) {
+            this.entries.images.splice(image.item, 1)
+            this.imagesView.splice(image.item, 1)
+            console.log(this.entries.images);
+        },
+        deleteParam(paramEntries){
             console.log(paramEntries);
-            this.entries.params = this.entries.params.filter(param => param.id !== paramEntries.id || param.value !== paramEntries.value)
+            this.entries.params = this.entries.params.filter(param=> param.id !== paramEntries.id || param.value !== paramEntries.value)
             console.log(this.entries.params);
 
         },
 
     },
-   watch: {
+    watch: {
         entries: {
             handler(new_val, old_val) {
 
@@ -146,11 +134,10 @@ export default {
 </script>
 
 <template>
-
     <div class="grid grid-cols-3 gap-4">
         <div class="">
             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <h1>Create Product</h1>
+                <h1>Create Product Children</h1>
             </div>
         </div>
         <div class="">
@@ -294,28 +281,22 @@ export default {
 
                     </div>
                     <div>
-                        <div class="container mx-auto p-2">
-                            <div class="px-2 py-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <h1>Params Product</h1>
-                            </div>
+                        <div class="container mx-auto p-6">
                             <div class="flex flex-wrap gap-2">
                                 <div v-for="paramEntries in entries.params">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                                     {{ paramEntries.title }} - {{ paramEntries.value }}
-                                    <button @click.prevent="deleteParam(paramEntries)" type="button"
-                                            class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
+                                    <button @click.prevent="deleteParam(paramEntries)" type="button" class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
                                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                              fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                          stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
                 </button>
             </span>
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="py-4">
@@ -335,13 +316,13 @@ export default {
                     </div>
                     <div class="p-6 border-t border-gray-200 rounded-b">
 
-                        <button @click.prevent="updateProduct"
+                        <button @click.prevent="storeProduct"
                                 class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                                type="submit">Update
+                                type="submit">Create
                         </button>
-                        <button @click.prevent="updateProductToIndex"
+                        <button @click.prevent="storeProductToIndex"
                                 class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                                type="submit">Update to Index
+                                type="submit">Create to Index
                         </button>
                     </div>
                 </div>
@@ -351,13 +332,26 @@ export default {
         </div>
 
         <div class="">
-            <div v-if="product.images.length !==0">
+            <div>
                 <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <h1>Images</h1>
+                    <h1>Images Parent Product</h1>
+                </div>
+                <!--        Images      -->
+                <div v-for="image in product.images" class="relative">
+                    <div class="py-4 px-2 w-40">
+                        <div class="">
+                            <img :src="image.url" alt="" class="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="imagesView.length !==0">
+                <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <h1>Images Preview</h1>
                 </div>
                 <!--        Images View     -->
-                <div v-for="image in entries.product.images" class="relative">
-                    <div class="py-4 px-2 w-80">
+                <div v-for="image in imagesView" class="relative">
+                    <div class="py-4 px-2 w-40">
                         <div class="">
                             <img :src="image.url" alt="" class="">
                             <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
@@ -370,25 +364,6 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="imagesView.length!==0">
-                <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <h1>Images Preview</h1>
-                </div>
-                <div v-for="image in imagesView" class="relative">
-                    <div class="py-4 px-2 w-80">
-                        <div class="">
-                            <img :src="image.url" alt="" class="">
-                            <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
-                                <button @click.prevent="deleteImagePreview(image)"
-                                        class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
-                                    X
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
         <!--        Closable toast message      -->
         <div v-if="success">
