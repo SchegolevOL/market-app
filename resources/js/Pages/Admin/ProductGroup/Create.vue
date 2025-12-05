@@ -1,7 +1,7 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
-import WindowSuccessMessage from "@/Components/MyComponents/WindowSuccessMessage.vue";
+import WindowSuccessMessage from "@/Components/Admin/General/WindowSuccessMessage.vue";
 
 
 export default {

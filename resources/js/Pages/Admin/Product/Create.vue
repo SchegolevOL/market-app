@@ -1,11 +1,13 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import InputErrorValidate from "@/Components/Admin/General/InputErrorValidate.vue";
 
 
 export default {
     name: "Create",
     components: {
+        InputErrorValidate,
         Link
     },
     layout: AdminLayout,
@@ -30,6 +32,8 @@ export default {
                 params: [],
             },
             imagesView: [],
+            errors: [],
+
         }
     },
 
@@ -61,7 +65,9 @@ export default {
                     this.$refs.image_input.value = null;
 
                 })
-
+                .catch(e => {
+                    this.errors = e.response.data.errors;
+                })
         },
         storeProductToIndex() {
 
@@ -99,8 +105,7 @@ export default {
 
             }
             console.log(!this.entries.params.includes(param))
-            if (this.entries.params.every(enParam=>enParam.id !== param.id||enParam.value !== param.value))
-            {
+            if (this.entries.params.every(enParam => enParam.id !== param.id || enParam.value !== param.value)) {
                 this.entries.params.push(param)
                 this.paramOption = {paramObject: {}}
             }
@@ -112,9 +117,9 @@ export default {
             this.imagesView.splice(image.item, 1)
             console.log(this.entries.images);
         },
-        deleteParam(paramEntries){
+        deleteParam(paramEntries) {
             console.log(paramEntries);
-            this.entries.params = this.entries.params.filter(param=> param.id !== paramEntries.id || param.value !== paramEntries.value)
+            this.entries.params = this.entries.params.filter(param => param.id !== paramEntries.id || param.value !== paramEntries.value)
             console.log(this.entries.params);
 
         },
@@ -150,6 +155,10 @@ export default {
                         <input v-model="entries.product.title" type="text" name="product-name" id="product-name"
                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                placeholder="Enter Title" required="">
+                        <div v-if="errors['product.title']" v-for="error in errors['product.title']">
+                            <InputErrorValidate :error="error"/>
+                        </div>
+
                     </div>
                     <div>
                         <label for="product-name"
@@ -157,12 +166,18 @@ export default {
                         <textarea v-model="entries.product.description" type="text" name="" id=""
                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                   placeholder="Enter description”"></textarea>
+                        <div v-if="errors['product.description']" v-for="error in errors['product.description']">
+                            <InputErrorValidate :error="error"/>
+                        </div>
                     </div>
                     <div>
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Content</label>
                         <textarea v-model="entries.product.content" type="text"
                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                   placeholder="Enter content" required=""></textarea>
+                        <div v-if="errors['product.content']" v-for="error in errors['product.content']">
+                            <InputErrorValidate :error="error"/>
+                        </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -170,6 +185,9 @@ export default {
                             <input v-model="entries.product.price" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter price" required="">
+                            <div v-if="errors['product.price']" v-for="error in errors['product.price']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                         <div>
                             <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Old
@@ -178,12 +196,18 @@ export default {
                                    id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter old price" required="">
+                            <div v-if="errors['product.old_price']" v-for="error in errors['product.old_price']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                         <div>
                             <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">QTY</label>
                             <input v-model="entries.product.qty" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter QTY" required="">
+                            <div v-if="errors['product.qty']" v-for="error in errors['product.qty']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
@@ -193,6 +217,9 @@ export default {
                             <input v-model="entries.product.article" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter article" required="">
+                            <div v-if="errors['product.article']" v-for="error in errors['product.article']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
 
 
@@ -210,7 +237,9 @@ export default {
                                 </option>
 
                             </select>
-
+                            <div v-if="errors['product.category_id']" v-for="error in errors['product.category_id']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                         <div class="">
                             <label for="product_parent"
@@ -226,7 +255,9 @@ export default {
                                 </option>
 
                             </select>
-
+                            <div v-if="errors['product.product_group_id']" v-for="error in errors['product.product_group_id']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                     </div>
                     <!--Params-->
@@ -243,6 +274,9 @@ export default {
                                     }}
                                 </option>
                             </select>
+                            <div v-if="errors['product.param']" v-for="error in errors['product.param']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                         <div>
                             <label for="product_parent"
@@ -251,6 +285,9 @@ export default {
                                    type="text"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter Value" required="">
+                            <div v-if="errors['product.params']" v-for="error in errors['product.params']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                         <div>
                             <label for="product_parent"
@@ -279,10 +316,12 @@ export default {
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                                     {{ paramEntries.title }} - {{ paramEntries.value }}
-                                    <button @click.prevent="deleteParam(paramEntries)" type="button" class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
+                                    <button @click.prevent="deleteParam(paramEntries)" type="button"
+                                            class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
                                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                              fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
                 </button>
             </span>
@@ -304,6 +343,9 @@ export default {
                             </label>
                             <input ref="image_input" multiple id="upload" type="file" class="hidden"
                                    @change="addImages"/>
+                            <div v-if="errors['product.images']" v-for="error in errors['product.images']">
+                                <InputErrorValidate :error="error"/>
+                            </div>
                         </div>
                     </div>
                     <div class="p-6 border-t border-gray-200 rounded-b">
