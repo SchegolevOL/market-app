@@ -107,7 +107,7 @@ export default {
                 </td>
 
 
-                <td class="px-6 py-4 whitespace-nowrap">{{ category.parent }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ category.parent_title }}</td>
                 <td class="px-6 py-4 whitespace-nowrap  w-96">
                     <Link :href="route('admin.categories.edit', category)"
                           class="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out">

@@ -9,7 +9,11 @@ use function Laravel\Prompts\warning;
 
 class Category extends Model
 {
-    public function getParentAttribute()
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+    public function getParentTitleAttribute()
     {
         $parent=Category::query()->where('id',$this->parent_id)->first();
 

@@ -17,7 +17,7 @@ class CategoryViewResource extends JsonResource
         return [
             'id'=>$this->id,
             'title'=>$this->title,
-            'parent'=>$this->parent,
+            'parent'=>$this->parent_title,
             'parent_id'=>$this->parent_id,
             'images_url'=>$this->image_urls,
             'breadcrumbs' => $this->breadcrumbs,

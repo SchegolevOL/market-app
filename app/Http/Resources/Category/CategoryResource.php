@@ -18,7 +18,7 @@ class CategoryResource extends JsonResource
         return [
             'id'=>$this->id,
             'title'=>$this->title,
-            'parent'=>$this->parent,
+            'parent_title'=>$this->parent_title,
             'parent_id'=>$this->parent_id,
             'images'=> ImageResource::collection($this->images)->resolve(),
         ];

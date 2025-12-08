@@ -25,8 +25,12 @@ class IndexRequest extends FormRequest
 
 
         return [
-            'title' => 'nullable|string|max:255',
-            'parent' => 'nullable|integer|exists:categories,id',
+
+            'parent_title' => 'nullable|string',
+            'title' => 'nullable|string',
+            'created_at_from' => 'nullable|date_format:Y-m-d',
+            'created_at_to' => 'nullable|date_format:Y-m-d',
         ];
     }
 }
+
