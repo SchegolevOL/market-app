@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use App\Http\Filters\CategoryFilter;
+use App\Models\Traits\HasFilter;
 use App\Services\CategoryService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use function Laravel\Prompts\warning;
 
 class Category extends Model
 {
+    use HasFilter;
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -40,5 +45,10 @@ class Category extends Model
 
     }
 
+    public function scopeFilter(Builder $builder, array $data): Builder
+    {
+        $categoryFilter = new CategoryFilter();
+       return $categoryFilter->apply($builder, $data);
+    }
 
 }

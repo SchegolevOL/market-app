@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Filters\CategoryFilter;
 use App\Http\Requests\Api\Admin\Category\IndexRequest;
 use App\Http\Requests\Api\Admin\Category\StoreRequest;
 use App\Http\Requests\Api\Admin\Category\UpdateRequest;
@@ -21,25 +22,12 @@ class CategoryController extends Controller
     public function index(IndexRequest $request)
     {
         $data = $request->validated();
-        $categoryQuery = Category::query();
-        if (isset($data['title'])) {
-            $categoryQuery->where('title', 'like', '%' . $data['title'] . '%');
-        }
-        if (isset($data['parent_title'])) {
-           // $categoryQuery->whereRelation('parent','title', 'like', '%' . $data['parent_title'] . '%');
-            $categoryQuery->whereHas('parent', function ($query) use ($data) {
-                $query->where('title', 'like', '%' . $data['parent_title'] . '%');
-            });
-        }
-        if (isset($data['created_at_from'])) {
 
-            $categoryQuery->whereDate('created_at', '>=', $data['created_at_from']);
 
-        }
-        if (isset($data['created_at_to'])) {
-            $categoryQuery->whereDate('created_at', '<=', $data['created_at_to']);
-        }
-        return CategoryResource::collection($categoryQuery->get())->resolve();
+        $categories = Category::filter($data)->get();
+
+
+        return CategoryResource::collection($categories)->resolve();
     }
 
     /**
