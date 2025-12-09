@@ -11,21 +11,30 @@ export default {
     layout: AdminLayout,
     props: {
         filterTypes: Array,
-        param:{},
+        param:Array,
+    },
+    data(){
+       return{
+           entries:{
+               param: this.param,
+               //_method: 'patch',
+           },
+
+       }
     },
 
     methods: {
         updateParam() {
+            console.log(this.entries);
 
-
-            axios.patch(route('admin.params.update', this.param), this.param)
+            axios.patch(route('admin.params.update', this.entries.param.id), this.entries)
                 .then(res => {
 
 
                 })
         },
         updateParamToIndex() {
-            axios.patch(route('admin.params.update', this.param), this.param)
+            axios.patch(route('admin.params.update', this.entries), this.param)
                 .then(function () {
                         window.location.replace(route('admin.params.index'));
 
@@ -65,7 +74,7 @@ export default {
                 <div class="">
                     <div class="col-span-6 sm:col-span-3">
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
-                        <input v-model="param.title" type="text" name="product-name" id="product-name"
+                        <input v-model="entries.param.title" type="text" name="product-name" id="product-name"
                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                placeholder="Enter Title”" required="">
                     </div>
@@ -73,7 +82,7 @@ export default {
                     <div class="col-span-6 sm:col-span-3">
                         <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Filter Type</label>
 
-                        <select v-model="param.filter_type"
+                        <select v-model="entries.param.filter_type"
                                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                 id="service" name="service">
                             <option selected disabled>Select Filter Type</option>
@@ -93,11 +102,11 @@ export default {
 
                     <button @click.prevent="updateParam"
                             class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Create
+                            type="submit">Update
                     </button>
                     <button @click.prevent="updateParamToIndex"
                             class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Create to Index
+                            type="submit">Update to Index
                     </button>
                 </div>
             </div>

@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Requests\Admin\Rolet;
+namespace App\Http\Requests\Api\Admin\Param;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Storage;
 
-class StoteRequest extends FormRequest
+class IndexRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,11 @@ class StoteRequest extends FormRequest
      */
     public function rules(): array
     {
+
+
         return [
-            //
+            'title' => 'nullable|string',
         ];
     }
 }
+

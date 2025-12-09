@@ -18,7 +18,7 @@ class CategoryService
 
     public static function update(Category $category, array $data): Category
     {
-
+        dd($data);
         $category->update($data['category']);
         ImageService::storeBatch($category, $data['images']);
         return $category->fresh();

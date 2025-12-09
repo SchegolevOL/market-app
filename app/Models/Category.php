@@ -45,10 +45,6 @@ class Category extends Model
 
     }
 
-    public function scopeFilter(Builder $builder, array $data): Builder
-    {
-        $categoryFilter = new CategoryFilter();
-       return $categoryFilter->apply($builder, $data);
-    }
+
 
 }

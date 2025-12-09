@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ProductGroup;
+use Illuminate\Http\Response;
 
 class ProductGroupService
 {
@@ -17,5 +18,11 @@ class ProductGroupService
     {
         $productGroup->update($data);
         return $productGroup->fresh();
+    }
+
+    public static function delete(ProductGroup $productGroup)
+    {
+        $productGroup->delete();
+
     }
 }

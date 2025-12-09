@@ -61,6 +61,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
+
         $categories = Category::all()->except($category->id);
         $categories =CategoryResource::collection($categories)->resolve();
         $category = CategoryResource::make($category)->resolve();
@@ -73,9 +74,9 @@ class CategoryController extends Controller
      */
     public function update(UpdateRequest $request, Category $category)
     {
-
+dd($request);
         $data = $request->validationData();
-
+dd($data);
         $category = CategoryService::update($category, $data);
     ;
         return CategoryResource::make($category)->resolve();

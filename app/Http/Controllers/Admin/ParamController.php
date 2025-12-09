@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Param\ParamFilterTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Param\StoreRequest;
+use App\Http\Requests\Admin\Param\UpdateRequest;
 use App\Http\Resources\Param\ParamResource;
 use App\Models\Param;
 use App\Services\ParamService;
@@ -38,7 +39,7 @@ class ParamController extends Controller
     public function store(StoreRequest $request)
     {
         $data = $request->validationData();
-        $param = ParamService::store($data['param']);
+        $param = ParamService::store($data);
         return ParamResource::make($param)->resolve();
     }
 
@@ -64,9 +65,11 @@ class ParamController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\Admin\Param\UpdateRequest $request, Param $param)
+    public function update(UpdateRequest $request, Param $param)
     {
-        $data = $request->validated();
+
+        $data = $request->validationData();
+
         $param = ParamService::update($param, $data);
         return ParamResource::make($param)->resolve();
     }
@@ -76,7 +79,7 @@ class ParamController extends Controller
      */
     public function destroy(Param $param)
     {
-        $param->delete();
+        ParamService::delete($param);
         return response([
             'message' => 'Param deleted successfully'
         ], Response::HTTP_OK);
