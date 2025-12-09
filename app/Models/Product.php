@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasFilter;
 use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[ObservedBy(ProductObserver::class)]
 class Product extends Model
 {
+    use HasFilter;
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
