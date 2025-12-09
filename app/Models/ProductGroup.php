@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasFilter;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductGroup extends Model
 {
+    use HasFilter;
     public function Category()
     {
         return $this->belongsTo(Category::class);

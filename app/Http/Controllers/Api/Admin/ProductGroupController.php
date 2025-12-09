@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Admin\ProductGroup\IndexRequest;
 use App\Http\Requests\Api\Admin\ProductGroup\StoreRequest;
 use App\Http\Requests\Api\Admin\ProductGroup\UpdateRequest;
 use App\Http\Resources\ProductGroup\ProductGroupResource;
@@ -16,9 +17,11 @@ class ProductGroupController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        return ProductGroupResource::collection(ProductGroup::all())->resolve();
+        $data = $request->validated();
+        $productGroups = ProductGroup::filter($data)->get();
+        return ProductGroupResource::collection($productGroups)->resolve();
     }
 
     /**
