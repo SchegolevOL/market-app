@@ -39,6 +39,8 @@ class IndexRequest extends FormRequest
             'created_at_to' => 'nullable|date_format:Y-m-d',
             'updated_at_from' => 'nullable|date_format:Y-m-d',
             'updated_at_to' => 'nullable|date_format:Y-m-d',
+            'param_title_value'=>'nullable|array',
+
         ];
     }
 }

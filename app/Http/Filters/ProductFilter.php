@@ -23,6 +23,7 @@ class ProductFilter extends AbstractFilter
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
+        'param_title_value'
     ];
 
     protected function title(Builder $builder, $value)
@@ -92,6 +93,13 @@ class ProductFilter extends AbstractFilter
     protected function updateddAtTo(Builder $builder, $value)
     {
         $builder->whereDate('updated_at', '<=', $value);
+    }
+    protected function paramTitleValue(Builder $builder, $data)
+    {
+        $title= $data['title'];
+        $value = $data['value'];
+        $builder->whereRelation('params', 'title', 'like', '%'.$title.'%')
+            ->whereRelation('params', 'value', '=', $value);
     }
 
 }

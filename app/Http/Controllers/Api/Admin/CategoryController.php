@@ -22,11 +22,7 @@ class CategoryController extends Controller
     public function index(IndexRequest $request)
     {
         $data = $request->validated();
-
-
         $categories = Category::filter($data)->get();
-
-
         return CategoryResource::collection($categories)->resolve();
     }
 
@@ -55,8 +51,6 @@ class CategoryController extends Controller
     {
 
         $data = $request->validationData();
-
-
         $category= CategoryService::update($category, $data);
         return CategoryResource::make($category)->resolve();
     }
