@@ -19,8 +19,12 @@ class CategoryController extends Controller
     public function index(IndexRequest $request)
     {
 
-        $categories = Category::all();
+        $data = $request->validated();
+        $categories = Category::filter($data)->get();
         $categories =CategoryResource::collection($categories)->resolve();
+        if ($request->wantsJson()) {
+            return $categories;
+        }
         return inertia('Admin/Category/Index', compact('categories'));
     }
 

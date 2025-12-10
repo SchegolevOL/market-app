@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\Param\ParamFilterTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Param\IndexRequest;
 use App\Http\Requests\Admin\Param\StoreRequest;
 use App\Http\Requests\Admin\Param\UpdateRequest;
 use App\Http\Resources\Param\ParamResource;
@@ -16,11 +17,17 @@ class ParamController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        $params = Param::all();
+        $data= $request->validated();
 
+        $params = Param::filter($data)->get();
         $params =ParamResource::collection($params)->resolve();
+        if ($request->wantsJson()) {
+
+            return $params;
+
+        }
         return inertia('Admin/Param/Index', compact('params'));
     }
 

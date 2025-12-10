@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ProductGroup\IndexRequest;
 use App\Http\Requests\Admin\ProductGroup\StoreRequest;
 use App\Http\Requests\Admin\ProductGroup\UpdateRequest;
 use App\Http\Resources\Category\CategoryResource;
@@ -18,12 +19,15 @@ class ProductGroupController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        $productGroups = ProductGroup::all();
-        $productGroups =ProductGroupResource::collection($productGroups)->resolve();
-
-        return inertia('Admin/ProductGroup/Index', compact('productGroups'));
+        $data = $request->validated();
+        $productGroups = ProductGroup::filter($data)->get();
+        $productGroups = ProductGroupResource::collection($productGroups)->resolve();
+        if ($request->wantsJson()) {
+            return $productGroups;
+        }
+        return inertia("Admin/ProductGroup/Index", ["productGroups" => $productGroups]);
     }
 
     /**

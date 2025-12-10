@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Product\IndexRequest;
 use App\Http\Requests\Admin\Product\StoreRequest;
 use App\Http\Requests\Admin\Product\UpdateRequest;
 use App\Http\Resources\Category\CategoryResource;
@@ -23,10 +24,14 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        $products = Product::query()->whereNull('parent_id')->get();
+        $data = $request->validated();
+        $products = Product::filter($data)->whereNull('parent_id')->get();
         $products =ProductResource::collection($products)->resolve();
+        if ($request->wantsJson()) {
+            return $products;
+        }
         return inertia('Admin/Product/Index', compact('products'));
     }
 

@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class Go extends Command
 {
@@ -31,10 +32,18 @@ class Go extends Command
      */
     public function handle()
     {
-        $product = Product::query()->first();
+        $value = 's';
+        $value = Str::lower($value);
+        $types = [];
+        $enum = ParamFilterTypeEnum::map();
+
+        for ($i=1; $i<=count($enum); $i++) {
+            if(str_contains($enum[$i], $value)){
+                $types[] = $i;
+            }
+        }
+        dd($types);
 
 
-
-        dd($product->images);
     }
 }

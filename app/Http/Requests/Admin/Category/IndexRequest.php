@@ -26,7 +26,7 @@ class IndexRequest extends FormRequest
 
         return [
             'title' => 'nullable|string|max:255',
-            'parent' => 'nullable|integer|exists:categories,id',
+            'parent_title' => 'nullable|string|',
         ];
     }
 }

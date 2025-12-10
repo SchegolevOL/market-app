@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api\Admin\Param;
+namespace App\Http\Requests\Admin\Param;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +26,7 @@ class IndexRequest extends FormRequest
 
         return [
             'title' => 'nullable|string',
-            'filter_type_title'
+            'type_title'=>'nullable|string',
         ];
     }
 }

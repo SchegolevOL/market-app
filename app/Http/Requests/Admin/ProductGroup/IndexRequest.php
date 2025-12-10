@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Api\Admin\Param;
+namespace App\Http\Requests\Admin\ProductGroup;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Storage;
 
 class IndexRequest extends FormRequest
 {
@@ -22,11 +21,8 @@ class IndexRequest extends FormRequest
      */
     public function rules(): array
     {
-
-
         return [
             'title' => 'nullable|string',
-            'filter_type_title'
         ];
     }
 }
