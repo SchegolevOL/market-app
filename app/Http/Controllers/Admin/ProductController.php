@@ -26,9 +26,9 @@ class ProductController extends Controller
      */
     public function index(IndexRequest $request)
     {
-        $data = $request->validated();
-        $products = Product::filter($data)->whereNull('parent_id')->get();
-        $products =ProductResource::collection($products)->resolve();
+        $data = $request->validationData();
+        $products = Product::filter($data)->whereNull('parent_id')->paginate($data['per_page'], '*', 'page', $data['page']);
+        $products =ProductResource::collection($products);
         if ($request->wantsJson()) {
             return $products;
         }

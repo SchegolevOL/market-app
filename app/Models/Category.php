@@ -14,6 +14,11 @@ use function Laravel\Prompts\warning;
 class Category extends Model
 {
     use HasFilter;
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');

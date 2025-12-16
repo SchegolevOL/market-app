@@ -32,7 +32,10 @@ class ProductObserver
             ImageService::destroy($image);
         }
         $product->params()->detach();
-        $product->children()->delete();
+        foreach ($product->children()as $child) {
+            $child->delete();
+        }
+
     }
 
     /**

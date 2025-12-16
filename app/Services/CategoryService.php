@@ -57,4 +57,15 @@ class CategoryService
         }
 
     }
+
+    public static function getCategoryChildren(Category $category): array
+    {
+        $array = [];
+        $categoryChildren = Category::where('parent_id', $category->id)->get();
+        foreach ($categoryChildren as $categoryChild) {
+            $array = array_merge($array, self::getCategoryChildren($categoryChild));
+        }
+        $array[] = $category;
+        return $array;
+    }
 }

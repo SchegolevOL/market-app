@@ -40,8 +40,17 @@ class IndexRequest extends FormRequest
             'updated_at_from' => 'nullable|date_format:Y-m-d',
             'updated_at_to' => 'nullable|date_format:Y-m-d',
             'param_title_value'=>'nullable|array',
-
+            'per_page'=>'nullable|integer',
+            'page'=>'nullable|integer',
         ];
+    }
+    protected function passedValidation()
+    {
+        return $this->merge([
+
+            'per_page' => $this->per_page ?? 5,
+            'page' => $this->page ?? 1,
+        ]);
     }
 }
 

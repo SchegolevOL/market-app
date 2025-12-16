@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasFilter;
 use App\Observers\ProductObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -38,5 +39,11 @@ class Product extends Model
     public function productGroup(): BelongsTo
     {
         return $this->belongsTo(ProductGroup::class, 'product_group_id', 'id');
+    }
+
+    public function scopeByCategories(Builder $builder, array $categoryChildren): Builder
+    {
+        return $builder->whereIn('category_id', array_column($categoryChildren, 'id'))
+            ->whereNull('parent_id');
     }
 }
