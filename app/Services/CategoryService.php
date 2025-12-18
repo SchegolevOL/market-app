@@ -58,20 +58,26 @@ class CategoryService
 
     }
 
-    public static function getCategoryChildren(Category $category): array
+    public static function getCategoryChildren(Category $category)
     {
-        $array = [];
+        $collection = collect([]);
         $categoryChildren = Category::where('parent_id', $category->id)->get();
         foreach ($categoryChildren as $categoryChild) {
-            $array = array_merge($array, self::getCategoryChildren($categoryChild));
+            $collection = $collection->merge(self::getCategoryChildren($categoryChild));
         }
-        $array[] = $category;
-        return $array;
+        $collection->push($category);
+        return $collection;
     }
 
     public static function getCategoryParents(Category $category)
     {
-
+        $collection = collect([]);
+        if ($category->parent_id) {
+            $patentCategory = Category::find($category->parent_id);
+            $collection->push($patentCategory);
+            $collection = $collection->merge(self::getCategoryParents($patentCategory));
+        }
+        return $collection;
     }
 
 

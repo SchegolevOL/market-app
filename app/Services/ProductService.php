@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 
@@ -69,7 +70,7 @@ class ProductService
         ProductService::attachBatchParams($product, $data);
     }
 
-    public static function indexByCategories(array $categoryChildren)
+    public static function indexByCategories(Collection $categoryChildren)
     {
         return Product::byCategories($categoryChildren)->get();
     }

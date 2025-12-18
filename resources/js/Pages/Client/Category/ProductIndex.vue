@@ -2,14 +2,19 @@
 import {defineComponent} from 'vue'
 import ProductItem from "@/Components/Client/Product/ProductItem.vue";
 import ClientLayout from "@/Layouts/ClientLayout.vue";
+import {Link} from "@inertiajs/vue3";
 
 export default defineComponent({
     name: "ProductIndex",
     layout: ClientLayout,
-    components: {ProductItem
+    components: {
+        Link,
+        ProductItem
     },
     props:{
-        products:{}
+        products:Array,
+        bredCrumbs:Array,
+        category:{},
     }
 
 })
@@ -22,7 +27,16 @@ export default defineComponent({
 
         <aside class="w-1/4 border-gray-900 min-h-screen">
             <nav>
-                products
+
+                <template v-for="bredCrumb in bredCrumbs">
+                    <Link :href="route('client.categories.products.index', bredCrumb.id)">
+                        {{bredCrumb.title}}
+                    </Link>
+                    <span>/</span>
+                </template>
+               <span>
+                   {{category.title}}
+               </span>
 
 
 

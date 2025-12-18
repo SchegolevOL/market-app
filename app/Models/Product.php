@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Collection;
 
 #[ObservedBy(ProductObserver::class)]
 class Product extends Model
@@ -41,9 +42,9 @@ class Product extends Model
         return $this->belongsTo(ProductGroup::class, 'product_group_id', 'id');
     }
 
-    public function scopeByCategories(Builder $builder, array $categoryChildren): Builder
+    public function scopeByCategories(Builder $builder, Collection $categoryChildren): Builder
     {
-        return $builder->whereIn('category_id', array_column($categoryChildren, 'id'))
+        return $builder->whereIn('category_id', $categoryChildren->pluck('id'))
             ->whereNull('parent_id');
     }
 }
