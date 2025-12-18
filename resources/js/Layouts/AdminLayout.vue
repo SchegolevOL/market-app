@@ -68,13 +68,13 @@ export default {
         <!-- Main content -->
         <div class="flex flex-col flex-1 overflow-y-auto">
             <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200">
-                <div class="flex items-center px-4">
+<!--                <div class="flex items-center px-4">
 
                     <div class="relative mx-auto text-gray-600">
 
                     </div>
                 </div>
-                <!-- notification -->
+                &lt;!&ndash; notification &ndash;&gt;
                 <div class="flex items-center space-x-4 mr-4">
                     <a href="#" class="text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -83,20 +83,27 @@ export default {
                             <path fill="currentColor" d="M17.643 1.355a.75.75 0 0 0-.072 1.058l1.292 1.48a3.25 3.25 0 0 1 .8 2.07l.057 2.717a.75.75 0 0 0 1.5-.031l-.057-2.718a4.75 4.75 0 0 0-1.17-3.024l-1.292-1.48a.75.75 0 0 0-1.058-.072" />
                         </svg>
                     </a>
-                    <!-- parametre -->
+                    &lt;!&ndash; parametre &ndash;&gt;
                     <a href="#" class="text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M19.9 12.66a1 1 0 0 1 0-1.32l1.28-1.44a1 1 0 0 0 .12-1.17l-2-3.46a1 1 0 0 0-1.07-.48l-1.88.38a1 1 0 0 1-1.15-.66l-.61-1.83a1 1 0 0 0-.95-.68h-4a1 1 0 0 0-1 .68l-.56 1.83a1 1 0 0 1-1.15.66L5 4.79a1 1 0 0 0-1 .48L2 8.73a1 1 0 0 0 .1 1.17l1.27 1.44a1 1 0 0 1 0 1.32L2.1 14.1a1 1 0 0 0-.1 1.17l2 3.46a1 1 0 0 0 1.07.48l1.88-.38a1 1 0 0 1 1.15.66l.61 1.83a1 1 0 0 0 1 .68h4a1 1 0 0 0 .95-.68l.61-1.83a1 1 0 0 1 1.15-.66l1.88.38a1 1 0 0 0 1.07-.48l2-3.46a1 1 0 0 0-.12-1.17ZM18.41 14l.8.9l-1.28 2.22l-1.18-.24a3 3 0 0 0-3.45 2L12.92 20h-2.56L10 18.86a3 3 0 0 0-3.45-2l-1.18.24l-1.3-2.21l.8-.9a3 3 0 0 0 0-4l-.8-.9l1.28-2.2l1.18.24a3 3 0 0 0 3.45-2L10.36 4h2.56l.38 1.14a3 3 0 0 0 3.45 2l1.18-.24l1.28 2.22l-.8.9a3 3 0 0 0 0 3.98m-6.77-6a4 4 0 1 0 4 4a4 4 0 0 0-4-4m0 6a2 2 0 1 1 2-2a2 2 0 0 1-2 2" />
                         </svg>
                     </a>
-                    <!-- logout -->
+                    &lt;!&ndash; logout &ndash;&gt;
                     <a href="#" class="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M5 11h8v2H5v3l-5-4l5-4zm-1 7h2.708a8 8 0 1 0 0-12H4a9.985 9.985 0 0 1 8-4c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.985 9.985 0 0 1-8-4" />
                         </svg>
                         <span class="font-bold">Logout</span>
                     </a>
-                </div>
+                </div>-->
+
+
+
+
+
+
+
             </div>
 
             <div class="p-4">

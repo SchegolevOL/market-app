@@ -23,6 +23,11 @@ export default defineComponent({
         <aside class="w-1/4 border-gray-900 min-h-screen">
             <nav>
                 products
+
+
+
+
+
             </nav>
         </aside>
         <article class="w-3/4 border-gray-50 p-4">
