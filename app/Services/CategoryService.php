@@ -77,7 +77,7 @@ class CategoryService
             $collection->push($patentCategory);
             $collection = $collection->merge(self::getCategoryParents($patentCategory));
         }
-        return $collection;
+        return $collection->reverse();
     }
 
 

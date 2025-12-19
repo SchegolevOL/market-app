@@ -14,7 +14,7 @@ class CategoryController extends Controller
 {
     public function productIndex(Category $category)
     {
-        $bredCrumbs = CategoryResource::collection(CategoryService::getCategoryParents($category)->reverse())->resolve();
+        $bredCrumbs = CategoryResource::collection(CategoryService::getCategoryParents($category));
 
         $categoryChildren = CategoryService::getCategoryChildren($category);
         $category = CategoryResource::make($category)->resolve();

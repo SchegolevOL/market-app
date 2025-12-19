@@ -33,7 +33,7 @@ export default {
             },
             imagesView: [],
             errors: [],
-
+            selectType: String,
         }
     },
 
@@ -255,7 +255,8 @@ export default {
                                 </option>
 
                             </select>
-                            <div v-if="errors['product.product_group_id']" v-for="error in errors['product.product_group_id']">
+                            <div v-if="errors['product.product_group_id']"
+                                 v-for="error in errors['product.product_group_id']">
                                 <InputErrorValidate :error="error"/>
                             </div>
                         </div>
@@ -267,6 +268,7 @@ export default {
                                    class="text-sm font-medium text-gray-900 block mb-2">Select Param</label>
 
                             <select v-model="paramOption.paramObject"
+
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
                                 <option :value="{}" selected disabled>Select Product Parent</option>
                                 <option v-for="param in params" :value="param">{{
@@ -279,16 +281,55 @@ export default {
                             </div>
                         </div>
                         <div>
-                            <label for="product_parent"
-                                   class="text-sm font-medium text-gray-900 block mb-2">Value</label>
-                            <input v-model="paramOption.value"
-                                   type="text"
-                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                   placeholder="Enter Value" required="">
-                            <div v-if="errors['product.params']" v-for="error in errors['product.params']">
-                                <InputErrorValidate :error="error"/>
+                            <div  v-if="paramOption.paramObject.filter_type_title === 'integer' || paramOption.paramObject.filter_type_title === 'checkbox'">
+                                <label for="product_parent"
+                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                                <input v-model="paramOption.value"
+                                       type="number"
+                                       class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                       placeholder="Enter Value" required="">
+                                <div v-if="errors['product.params']" v-for="error in errors['product.params']">
+                                    <InputErrorValidate :error="error"/>
+                                </div>
+                            </div>
+                            <div  v-if="paramOption.paramObject.filter_type_title === 'select'">
+                                <label for="product_parent"
+                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                                <input v-model="paramOption.value"
+                                       type="text"
+                                       class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                       placeholder="Enter Value" required="">
+                                <div v-if="errors['product.params']" v-for="error in errors['product.params']">
+                                    <InputErrorValidate :error="error"/>
+                                </div>
+                            </div>
+
+
+                            <div v-if="paramOption.paramObject.filter_type_title === 'color' ">
+                                <label for="product_parent"
+                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                                <input v-model="paramOption.value"
+                                       type="color" list="colors"
+                                       class="h-10 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full"
+                                       placeholder="Enter Value" required="">
+                                <datalist id="colors">
+                                    <option value="#ff0000" label="Red"/>
+                                    <option value="#008000" label="Green"/>
+                                    <option value="#0000ff" label="Blue"/>
+                                    <option value="#000000" label="Blak"/>
+                                    <option value="#ffffff" label="White"/>
+                                    <option value="#454545" label="Grey"/>
+                                    <option value="#ffea00" label="Yellow"/>
+                                    <option value="#ff7b00" label="Orange"/>
+                                    <option value="#8000ff" label="Purple"/>
+                                    <option value="#b93c3c" label="Pink"/>
+                                </datalist>
+                                <div v-if="errors['product.params']" v-for="error in errors['product.params']">
+                                    <InputErrorValidate :error="error"/>
+                                </div>
                             </div>
                         </div>
+
                         <div>
                             <label for="product_parent"
                                    class="text-sm font-medium text-gray-900 block mb-2">Value</label>
@@ -325,8 +366,11 @@ export default {
                     </svg>
                 </button>
             </span>
+
+
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
