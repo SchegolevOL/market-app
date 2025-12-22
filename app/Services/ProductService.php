@@ -70,9 +70,41 @@ class ProductService
         ProductService::attachBatchParams($product, $data);
     }
 
-    public static function indexByCategories(Collection $categoryChildren)
+    public static function indexByCategories(Collection $categoryChildren, array $data)
     {
-        return Product::byCategories($categoryChildren)->get();
+        $products = Product::byCategories($categoryChildren);
+
+
+        if (isset($data['filters']['integer']['from'])) {
+            $products->whereHas('paramProduct', function ($query) use ($data) {
+                foreach ($data['filters']['integer']['from'] as $key=>$value) {
+                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) >= ?',  $value);
+                }
+            });
+        }
+        if (isset($data['filters']['integer']['to'])) {
+            $products->whereHas('paramProduct', function ($query) use ($data) {
+                foreach ($data['filters']['integer']['to'] as $key=>$value) {
+                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) <= ?',  $value);
+                }
+            });
+        }
+        if (isset($data['filters']['checkbox'])) {
+            $products->whereHas('paramProduct', function ($query) use ($data) {
+                foreach ($data['filters']['checkbox'] as $key=>$value) {
+                    $query->where('param_id', $key)->whereIn('value', $value);
+                }
+            });
+        }
+        if (isset($data['filters']['select'])) {
+            $products->whereHas('paramProduct', function ($query) use ($data) {
+                foreach ($data['filters']['select'] as $key=>$value) {
+                    $query->where('param_id', $key)->where('value',  $value);
+                }
+            });
+        }
+
+        return $products->distinct()->get();
     }
 
 }
