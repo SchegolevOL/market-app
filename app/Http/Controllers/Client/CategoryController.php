@@ -8,8 +8,6 @@ use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Param\ParamsWithValuesResource;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Category;
-use App\Models\Param;
-use App\Models\Product;
 use App\Services\CategoryService;
 use App\Services\ParamService;
 use App\Services\ProductService;
@@ -22,6 +20,9 @@ class CategoryController extends Controller
 
         $categoryChildren = CategoryService::getCategoryChildren($category);
         $products = ProductResource::collection(ProductService::indexByCategories($categoryChildren, $data))->resolve();
+        $params = ParamService::indexByCategories($categoryChildren);
+        $params = ParamsWithValuesResource::collection($params)->resolve();
+
         if($request->wantsJson()){
 
             return $products;
@@ -29,8 +30,7 @@ class CategoryController extends Controller
 
         $bredCrumbs = CategoryResource::collection(CategoryService::getCategoryParents($category))->resolve();
 
-        $params = ParamService::indexByCategories($categoryChildren);
-        $params = ParamsWithValuesResource::collection($params)->resolve();
+
         $category = CategoryResource::make($category)->resolve();
 
 

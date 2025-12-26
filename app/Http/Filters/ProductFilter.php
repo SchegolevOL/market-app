@@ -23,7 +23,11 @@ class ProductFilter extends AbstractFilter
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
-        'param_title_value'
+        'param_title_value',
+
+        'integer',
+        'select',
+        'checkbox',
     ];
 
     protected function title(Builder $builder, $value)
@@ -100,6 +104,43 @@ class ProductFilter extends AbstractFilter
         $value = $data['value'];
         $builder->whereRelation('params', 'title', 'like', '%'.$title.'%')
             ->whereRelation('params', 'value', '=', $value);
+    }
+
+    /*Фильтры для Клиента*/
+    public function integer(Builder $builder, $data)
+    {
+        if (isset($data['from'])) {
+            $builder->whereHas('paramProduct', function ($query) use ($data) {
+                foreach ($data['from'] as $key=>$value) {
+                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) >= ?',  $value);
+                }
+            });
+        }
+        if (isset($data['to'])) {
+            $builder->whereHas('paramProduct', function ($query) use ($data) {
+                foreach ($data['filters']['integer']['to'] as $key=>$value) {
+                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) <= ?',  $value);
+                }
+            });
+        }
+    }
+
+    public function select(Builder $builder, $data)
+    {
+        $builder->whereHas('paramProduct', function ($query) use ($data) {
+            foreach ($data as $key=>$value) {
+                $query->where('param_id', $key)->where('value',  $value);
+            }
+        });
+    }
+
+    public function checkbox(Builder $builder, $data)
+    {
+        $builder->whereHas('paramProduct', function ($query) use ($data) {
+            foreach ($data as $key=>$value) {
+                $query->where('param_id', $key)->whereIn('value', $value);
+            }
+        });
     }
 
 }

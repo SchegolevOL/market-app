@@ -21,12 +21,14 @@ class ProductIndexRequest extends FormRequest
      */
     public function rules(): array
     {
+
+
         return [
-            'filters'=>['nullable','array'],
-            'filters.integer'=>['nullable','array'],
-            'filters.checkbox'=>['nullable','array'],
-            'filters.select'=>['nullable','array'],
-            'filters.color'=>['nullable','array'],
+
+            'integer'=>['nullable','array'],
+            'checkbox'=>['nullable','array'],
+            'select'=>['nullable','array'],
+            'color'=>['nullable','array'],
         ];
     }
 }

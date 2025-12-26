@@ -29,6 +29,7 @@ export default defineComponent({
                 checkbox: {}
             },
             productsData: this.products,
+            paramsData: this.params,
         }
     },
     methods: {
@@ -50,13 +51,13 @@ export default defineComponent({
             this.clear(this.filters.integer.to)
 
            axios.get(route('client.categories.products.index', this.category.id), {
-                params: {
-                    filters: this.filters
-                }
+                params: this.filters
+
             })
                 .then(res => {
-                    console.log(res.data)
+
                 this.productsData = res.data;
+
             })
         },
         clear(obj){
@@ -83,7 +84,7 @@ export default defineComponent({
             <div class="flex flex-col flex-1 overflow-y-auto border-x-green-700">
                 <nav class="flex flex-col flex-1 overflow-y-auto  px-2 py-4 gap-10 rounded-2xl">
                     <div class="">
-                        <template v-for="param in params">
+                        <template v-for="param in paramsData">
                             <div v-if="param.filter_type === 3" class="border-b border-gray-800">
                                 <div>
                                     <h3>{{ param.title }} :</h3>
