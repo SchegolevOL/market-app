@@ -28,32 +28,39 @@ class ProductFilter extends AbstractFilter
         'integer',
         'select',
         'checkbox',
+
     ];
 
     protected function title(Builder $builder, $value)
     {
-        return $builder->where('title', 'like', '%'.$value.'%');
+        return $builder->where('title', 'like', '%' . $value . '%');
     }
+
     protected function productGroupTitle(Builder $builder, $value)
     {
-        return $builder->whereRelation('productGroup','title', 'like', '%'.$value.'%');
+        return $builder->whereRelation('productGroup', 'title', 'like', '%' . $value . '%');
     }
+
     protected function categoryTitle(Builder $builder, $value)
     {
-        return $builder->whereRelation('category','title', 'like', '%'.$value.'%');
+        return $builder->whereRelation('category', 'title', 'like', '%' . $value . '%');
     }
+
     protected function description(Builder $builder, $value)
     {
-        return $builder->where('description', 'like', '%'.$value.'%');
+        return $builder->where('description', 'like', '%' . $value . '%');
     }
+
     protected function content(Builder $builder, $value)
     {
-        return $builder->where('content', 'like', '%'.$value.'%');
+        return $builder->where('content', 'like', '%' . $value . '%');
     }
+
     protected function article(Builder $builder, $value)
     {
-        return $builder->where('article', 'like', '%'.$value.'%');
+        return $builder->where('article', 'like', '%' . $value . '%');
     }
+
     protected function createdAtFrom(Builder $builder, $value)
     {
         $builder->whereDate('created_at', '>=', $value);
@@ -63,22 +70,27 @@ class ProductFilter extends AbstractFilter
     {
         $builder->where('price', '>=', $value);
     }
+
     protected function priceTo(Builder $builder, $value)
     {
         $builder->where('price', '<=', $value);
     }
+
     protected function oldPriceFrom(Builder $builder, $value)
     {
         $builder->where('old_price', '>=', $value);
     }
+
     protected function oldPriceTo(Builder $builder, $value)
     {
         $builder->where('old_price', '<=', $value);
     }
+
     protected function qtyFrom(Builder $builder, $value)
     {
         $builder->where('qty', '>=', $value);
     }
+
     protected function qtyTo(Builder $builder, $value)
     {
 
@@ -89,6 +101,7 @@ class ProductFilter extends AbstractFilter
     {
         $builder->whereDate('created_at', '<=', $value);
     }
+
     protected function updatedAtFrom(Builder $builder, $value)
     {
         $builder->whereDate('updated_at', '>=', $value);
@@ -98,11 +111,12 @@ class ProductFilter extends AbstractFilter
     {
         $builder->whereDate('updated_at', '<=', $value);
     }
+
     protected function paramTitleValue(Builder $builder, $data)
     {
-        $title= $data['title'];
+        $title = $data['title'];
         $value = $data['value'];
-        $builder->whereRelation('params', 'title', 'like', '%'.$title.'%')
+        $builder->whereRelation('params', 'title', 'like', '%' . $title . '%')
             ->whereRelation('params', 'value', '=', $value);
     }
 
@@ -111,15 +125,15 @@ class ProductFilter extends AbstractFilter
     {
         if (isset($data['from'])) {
             $builder->whereHas('paramProduct', function ($query) use ($data) {
-                foreach ($data['from'] as $key=>$value) {
-                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) >= ?',  $value);
+                foreach ($data['from'] as $key => $value) {
+                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) >= ?', $value);
                 }
             });
         }
         if (isset($data['to'])) {
             $builder->whereHas('paramProduct', function ($query) use ($data) {
-                foreach ($data['filters']['integer']['to'] as $key=>$value) {
-                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) <= ?',  $value);
+                foreach ($data['filters']['integer']['to'] as $key => $value) {
+                    $query->where('param_id', $key)->whereRaw('CAST(value AS INT) <= ?', $value);
                 }
             });
         }
@@ -128,8 +142,8 @@ class ProductFilter extends AbstractFilter
     public function select(Builder $builder, $data)
     {
         $builder->whereHas('paramProduct', function ($query) use ($data) {
-            foreach ($data as $key=>$value) {
-                $query->where('param_id', $key)->where('value',  $value);
+            foreach ($data as $key => $value) {
+                $query->where('param_id', $key)->where('value', $value);
             }
         });
     }
@@ -137,11 +151,13 @@ class ProductFilter extends AbstractFilter
     public function checkbox(Builder $builder, $data)
     {
         $builder->whereHas('paramProduct', function ($query) use ($data) {
-            foreach ($data as $key=>$value) {
+            foreach ($data as $key => $value) {
                 $query->where('param_id', $key)->whereIn('value', $value);
             }
         });
     }
+
+
 
 }
 

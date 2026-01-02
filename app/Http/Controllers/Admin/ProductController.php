@@ -29,6 +29,7 @@ class ProductController extends Controller
         $data = $request->validationData();
         $products = Product::filter($data)->whereNull('parent_id')->paginate($data['per_page'], '*', 'page', $data['page']);
         $products =ProductResource::collection($products);
+
         if ($request->wantsJson()) {
             return $products;
         }
@@ -111,21 +112,23 @@ class ProductController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function createChild(Product $product)
+
+    public function replicate(Product $product)
     {
-        $categories = Category::all();
-        $categories =CategoryResource::collection($categories)->resolve();
-        $params = Param::all();
-        $params =ParamResource::collection($params)->resolve();
-        $productGroups = ProductGroup::all();
-        $productGroups =ProductGroupResource::collection($productGroups)->resolve();
-        $product = ProductResource::make($product)->resolve();
-        return inertia('Admin/Product/CreateChild', compact('categories','productGroups', 'params', 'product'));
+
+       $cloneProduct = ProductService::replicate($product);
+
+
+       return to_route('admin.products.edit', $cloneProduct->id);
     }
+
+
+
 
     public function indexChild(Product $product)
     {
         return ProductResource::collection($product->children)->resolve();
-
     }
+
+
 }

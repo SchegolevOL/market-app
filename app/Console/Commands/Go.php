@@ -9,6 +9,8 @@ use App\Models\Product;
 use App\Models\User;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Go extends Command
@@ -32,18 +34,14 @@ class Go extends Command
      */
     public function handle()
     {
-        $value = 's';
-        $value = Str::lower($value);
-        $types = [];
-        $enum = ParamFilterTypeEnum::map();
+        $path = 'ihbticutxuykvbkjbivr/btvt/vuv/b8y7vyv.jpg';
 
-        for ($i=1; $i<=count($enum); $i++) {
-            if(str_contains($enum[$i], $value)){
-                $types[] = $i;
-            }
-        }
-        dd($types);
+        $extension = array_slice(explode('.', $path),-1);
+        $name = bin2hex(random_bytes(16));
 
+
+
+        dd($name.'.'.$extension[0]);
 
     }
 }

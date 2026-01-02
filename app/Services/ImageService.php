@@ -27,5 +27,26 @@ class ImageService
         $image->delete();
     }
 
+    public static function replicateBatch(Product $product, Product $cloneProduct)
+    {
+
+        foreach ($product->images as $image) {
+
+            $path = 'images/'.strtolower(class_basename($product)).'/'.self::getUniqueImageName($image->path);
+
+            Storage::disk('public')->copy( $image->path, $path);
+            $cloneProduct->images()->create([
+                'path' => $path,
+            ]);
+        }
+
+    }
+
+    private static function getUniqueImageName(String $path)
+    {
+        $extension = array_slice(explode('.', $path),-1);
+        $name = bin2hex(random_bytes(16));
+        return $name.'.'.$extension[0];
+    }
 
 }

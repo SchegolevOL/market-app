@@ -2,7 +2,7 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
 import ProductItem from "@/Components/Admin/Product/ProductItem.vue";
-import axios from "axios";
+
 import Paginate from "@/Components/Admin/General/Paginate.vue";
 
 
@@ -15,7 +15,7 @@ export default {
         Link,
     },
     props: {
-        products: {},
+        products: [],
     },
     data() {
         return {
@@ -27,15 +27,18 @@ export default {
     },
     methods: {
         updateProductsData(product) {
+
             if (product.parent_id) {
-                this.productsData.forEach(productData => {
+
+                this.productsData.data.forEach(productData => {
+                    console.log(productData)
                     if (productData.id === product.parent_id) {
                         productData.children = productData.children.filter(child => child.id !== product.id)
                     }
-                })
-                return
+                });
+                return;
             }
-            this.productsData = this.productsData.filter(productData => productData.id !== product.id)
+            this.productsData = this.productsData.filter(productData => productData.id !== product.id);
         },
         search() {
             axios.get(route('admin.products.index'), {
@@ -125,7 +128,7 @@ export default {
             </div>
         </div>
         <div class="col-start-1 col-end-7">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 border-gray-200">
                 <thead>
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">id</th>

@@ -16,6 +16,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', IsAdminMiddleware::c
     Route::resource('params', ParamController::class);
     Route::resource('categories', CategoryController::class);
     Route::delete('images/{image}', [ImageController::class, 'destroy'])->name('images.destroy');
-    Route::get('/products/{product}/children/create', [ProductController::class, 'createChild'])->name('products.children.create');
-    Route::get('/products/{product}/children', [ProductController::class, 'indexChild'])->name('products.children.index');
+    Route::post('products/{product}/replicate', [ProductController::class, 'replicate'])->name('products.replicate');
+    Route::post('products/{product}/replicate', [ProductController::class, 'replicate'])->name('products.replicate');
+
+    Route::get('products/{product}/children', [ProductController::class, 'indexChild'])->name('products.children.index');
 });

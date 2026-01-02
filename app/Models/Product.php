@@ -53,4 +53,23 @@ class Product extends Model
         return $this->hasMany(ParamProduct::class, 'product_id', 'id');
     }
 
+
+    public function getHasChildrenAttribute()
+    {
+        return $this->children()->exists();
+    }
+    public function getGroupedParamsAttribute()
+    {
+        return $this->params->groupBy('title')->map(function ($param) {
+            return [
+                'title' => $param->first()->title,
+                'value' => $param->pluck('pivot.value')->toArray(),
+                'label' => $param->first()->label,
+            ];
+        })->values()->toArray();
+    }
+
+
+
+
 }

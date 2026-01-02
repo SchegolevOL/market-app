@@ -72,11 +72,33 @@ class ProductService
 
     public static function indexByCategories(Collection $categoryChildren, array $data)
     {
+
         $products = Product::byCategories($categoryChildren)->filter($data);
-
-
-
         return $products->distinct()->get();
+    }
+
+    public static function replicate(Product $product):Product
+    {
+
+
+        try {
+            DB::beginTransaction();
+            $cloneProduct = $product->replicate();
+            $cloneProduct->article = $cloneProduct->article.fake()->randomNumber(4);
+            $cloneProduct->parent_id = $product->id;
+            $cloneProduct->push();
+
+            ImageService::replicateBatch($product,$cloneProduct);
+            ParamProductService::replicateBatch($product,$cloneProduct);
+            DB::commit();
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            abort(500, $exception->getMessage());
+        }
+
+
+        return $cloneProduct;
     }
 
 }

@@ -4,11 +4,13 @@ import ProductItem from "@/Components/Client/Product/ProductItem.vue";
 import ClientLayout from "@/Layouts/ClientLayout.vue";
 import {Link} from "@inertiajs/vue3";
 import {data} from "autoprefixer";
+import Breadcrumb from "@/Components/Client/Category/Breadcrumb.vue";
 
 export default defineComponent({
     name: "ProductIndex",
     layout: ClientLayout,
     components: {
+        Breadcrumb,
         Link,
         ProductItem
     },
@@ -26,7 +28,8 @@ export default defineComponent({
                     to: {}
                 },
                 select: {},
-                checkbox: {}
+                checkbox: {},
+
             },
             productsData: this.products,
             paramsData: this.params,
@@ -95,7 +98,9 @@ export default defineComponent({
 
                                         <input @change="setFilter(param, value)" type="checkbox" :value="value"
                                                :id="value"/>
-                                        <label class="px-2 text-sm text-gray-800" :for="value">{{ value }}</label>
+                                        <label v-if="param.label!=='color'" class="px-2 text-sm text-gray-800" :for="value">{{value}}</label>
+                                        <label v-if="param.label==='color'" class="px-2 m-2" :for="value"
+                                               :style="`background: ${value}; width: 32px; height: 16px;`"></label>
                                     </div>
                                 </div>
                             </div>
@@ -121,26 +126,7 @@ export default defineComponent({
                                     </div>
                                 </div>
                             </div>
-                            <div v-if="param.filter_type === 4" class="border-b border-gray-800">
-                                <div>
-                                    <h3>{{ param.title }} :</h3>
-                                </div>
-                                <div>
 
-                                    <div class="mb-2 items-center">
-                                        <label>От</label>
-                                        <input class="border-gray-200 border  rounded px-1 m-2" type="color"
-                                               value="#ffff"/>
-                                        <label>До</label>
-                                        <input class="border-gray-200 border  rounded px-1 m-2" type="color"
-                                               value="null"/>
-                                    </div>
-                                    <div v-for="value in param.param_values" class="mb-2 flex items-center">
-                                        <input type="checkbox" :value="value" :id="value"/>
-                                        <label class="px-2 text-sm text-gray-800" :for="value">{{value}}</label>
-                                    </div>
-                                </div>
-                            </div>
                         </template>
                         <div class="px-2 py-2">
                             <a @click.prevent="getPosts()"
@@ -156,17 +142,7 @@ export default defineComponent({
         <div class="grid grid-cols-6 gap-4">
 
             <div class="col-start-1 col-end-7">
-                <aside class="py-4 px-4 border-gray-900">
-                    <nav>
-                        <template v-for="bredCrumb in bredCrumbs">
-                            <Link :href="route('client.categories.products.index', bredCrumb.id)">
-                                {{ bredCrumb.title }}
-                            </Link>
-                            <span>/</span>
-                        </template>
-                        <span>{{ category.title }}</span>
-                    </nav>
-                </aside>
+                <Breadcrumb :bred-crumbs="bredCrumbs" :current="category.title"/>
             </div>
             <div class="col-start-1 col-end-7">
                 <div class="p-4">

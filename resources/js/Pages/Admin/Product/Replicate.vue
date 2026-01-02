@@ -1,90 +1,86 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
-import InputErrorValidate from "@/Components/Admin/General/InputErrorValidate.vue";
+import WindowSuccessMessage from "@/Components/Admin/General/WindowSuccessMessage.vue";
 
 
 export default {
-    name: "Create",
+    name: "Replicate",
     components: {
-        InputErrorValidate,
+        WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
     props: {
+
         categories: Array,
         productGroups: Array,
         params: Array,
+        cloneProduct: Array,
     },
+
     data() {
         return {
             paramOption: {
                 paramObject: {},
             },
             entries: {
-                product: {
-                    category_id: null,
-                    product_group_id: null,
-                    param: null,
+                product: this.cloneProduct,
 
-                },
                 images: [],
-                params: [],
+                params: this.cloneProduct.params,
+                _method: 'patch',
             },
             imagesView: [],
-            errors: [],
-            selectType: String,
+            success: false,
+
+
         }
+
+
     },
 
 
     methods: {
-        storeProduct() {
+        updateProduct() {
+
+
             console.log(this.entries);
 
-            axios.post(route('admin.products.store'), this.entries, {
+            axios.post(route('admin.products.update', this.entries.product.id), this.entries, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
 
+            }).then(res => {
+
+
+                this.entries.product = res.data;
+                this.entries.images = [];
+
+                console.log(this.entries.product);
+                this.imagesView = [];
+                this.$refs.image_input.value = null;
+
+                this.$nextTick(() => {
+
+                    this.success = true;
+                })
+
             })
-                .then(res => {
 
-
-                    this.entries = {
-                        product: {
-                            category_id: null,
-                            product_group_id: null,
-                            param: null,
-
-                        },
-                        images: [],
-                        params: [],
-                    };
-                    this.imagesView = [];
-                    this.$refs.image_input.value = null;
-
-                })
-                .catch(e => {
-                    this.errors = e.response.data.errors;
-                })
         },
-        storeProductToIndex() {
-
-            console.log(this.entries)
-            axios.post(route('admin.products.store'), this.entries, {
+        updateProductToIndex() {
+            axios.post(route('admin.products.update', this.entries.product.id), this.entries, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
-            })
-                .then(function () {
-                        window.location.replace(route('admin.products.index'));
 
-                    }
-                )
+            }).then(res => {
+                window.location.replace(route('admin.products.index'));
+            })
         },
         addImages(e) {
-            console.log(e.target.files);
             var tmp = Array.from(e.target.files)
             this.entries.images = this.entries.images.concat(tmp)
             console.log(this.entries.images)
@@ -95,7 +91,23 @@ export default {
                 };
             }
 
+        },
+        deleteImage(image) {
+            axios.delete(route('admin.images.destroy', image.id)).then(
+                res => {
 
+
+                    this.entries.product.images = this.entries.product.images.filter(productImage => productImage.id !== image.id)
+
+                    this.imagesView = [];
+
+                }
+            )
+        },
+        deleteImagePreview(image) {
+            this.entries.images.splice(image.item, 1)
+            this.imagesView.splice(image.item, 1)
+            console.log(this.entries.images);
         },
         setParam() {
             var param = {
@@ -104,18 +116,13 @@ export default {
                 value: this.paramOption.value,
 
             }
-            console.log(!this.entries.params.includes(param))
+
             if (this.entries.params.every(enParam => enParam.id !== param.id || enParam.value !== param.value)) {
                 this.entries.params.push(param)
                 this.paramOption = {paramObject: {}}
             }
 
 
-        },
-        deleteImage(image) {
-            this.entries.images.splice(image.item, 1)
-            this.imagesView.splice(image.item, 1)
-            console.log(this.entries.images);
         },
         deleteParam(paramEntries) {
             console.log(paramEntries);
@@ -124,6 +131,16 @@ export default {
 
         },
 
+    },
+   watch: {
+        entries: {
+            handler(new_val, old_val) {
+
+
+                this.success = false
+            },
+            deep: true
+        }
     }
 
 
@@ -131,7 +148,8 @@ export default {
 </script>
 
 <template>
-    <div class="grid grid-cols-3 gap-4">
+
+   <div class="grid grid-cols-3 gap-4">
         <div class="">
             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <h1>Create Product</h1>
@@ -155,10 +173,6 @@ export default {
                         <input v-model="entries.product.title" type="text" name="product-name" id="product-name"
                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                placeholder="Enter Title" required="">
-                        <div v-if="errors['product.title']" v-for="error in errors['product.title']">
-                            <InputErrorValidate :error="error"/>
-                        </div>
-
                     </div>
                     <div>
                         <label for="product-name"
@@ -166,18 +180,12 @@ export default {
                         <textarea v-model="entries.product.description" type="text" name="" id=""
                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                   placeholder="Enter description”"></textarea>
-                        <div v-if="errors['product.description']" v-for="error in errors['product.description']">
-                            <InputErrorValidate :error="error"/>
-                        </div>
                     </div>
                     <div>
                         <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Content</label>
                         <textarea v-model="entries.product.content" type="text"
                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                   placeholder="Enter content" required=""></textarea>
-                        <div v-if="errors['product.content']" v-for="error in errors['product.content']">
-                            <InputErrorValidate :error="error"/>
-                        </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -185,9 +193,6 @@ export default {
                             <input v-model="entries.product.price" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter price" required="">
-                            <div v-if="errors['product.price']" v-for="error in errors['product.price']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
                         </div>
                         <div>
                             <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Old
@@ -196,18 +201,12 @@ export default {
                                    id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter old price" required="">
-                            <div v-if="errors['product.old_price']" v-for="error in errors['product.old_price']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
                         </div>
                         <div>
                             <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">QTY</label>
                             <input v-model="entries.product.qty" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter QTY" required="">
-                            <div v-if="errors['product.qty']" v-for="error in errors['product.qty']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
@@ -217,9 +216,6 @@ export default {
                             <input v-model="entries.product.article" type="number" name="product-name" id="product-name"
                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
                                    placeholder="Enter article" required="">
-                            <div v-if="errors['product.article']" v-for="error in errors['product.article']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
                         </div>
 
 
@@ -237,9 +233,7 @@ export default {
                                 </option>
 
                             </select>
-                            <div v-if="errors['product.category_id']" v-for="error in errors['product.category_id']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
+
                         </div>
                         <div class="">
                             <label for="product_parent"
@@ -255,20 +249,16 @@ export default {
                                 </option>
 
                             </select>
-                            <div v-if="errors['product.product_group_id']"
-                                 v-for="error in errors['product.product_group_id']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
+
                         </div>
                     </div>
-                    <!--Params-->
+
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label for="product_parent"
                                    class="text-sm font-medium text-gray-900 block mb-2">Select Param</label>
 
                             <select v-model="paramOption.paramObject"
-
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
                                 <option :value="{}" selected disabled>Select Product Parent</option>
                                 <option v-for="param in params" :value="param">{{
@@ -276,60 +266,15 @@ export default {
                                     }}
                                 </option>
                             </select>
-                            <div v-if="errors['product.param']" v-for="error in errors['product.param']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
                         </div>
                         <div>
-                            <div  v-if="paramOption.paramObject.filter_type_title === 'integer' || paramOption.paramObject.filter_type_title === 'checkbox'">
-                                <label for="product_parent"
-                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
-                                <input v-model="paramOption.value"
-                                       type="number"
-                                       class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                       placeholder="Enter Value" required="">
-                                <div v-if="errors['product.params']" v-for="error in errors['product.params']">
-                                    <InputErrorValidate :error="error"/>
-                                </div>
-                            </div>
-                            <div  v-if="paramOption.paramObject.filter_type_title === 'select'">
-                                <label for="product_parent"
-                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
-                                <input v-model="paramOption.value"
-                                       type="text"
-                                       class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                       placeholder="Enter Value" required="">
-                                <div v-if="errors['product.params']" v-for="error in errors['product.params']">
-                                    <InputErrorValidate :error="error"/>
-                                </div>
-                            </div>
-
-
-                            <div v-if="paramOption.paramObject.label === 'color' ">
-                                <label for="product_parent"
-                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
-                                <input v-model="paramOption.value"
-                                       type="color" list="colors"
-                                       class="h-10 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full"
-                                       placeholder="Enter Value" required="">
-                                <datalist id="colors">
-                                    <option value="#ff0000" label="Red"/>
-                                    <option value="#008000" label="Green"/>
-                                    <option value="#0000ff" label="Blue"/>
-                                    <option value="#000000" label="Blak"/>
-                                    <option value="#ffffff" label="White"/>
-                                    <option value="#454545" label="Grey"/>
-                                    <option value="#ffea00" label="Yellow"/>
-                                    <option value="#ff7b00" label="Orange"/>
-                                    <option value="#8000ff" label="Purple"/>
-                                    <option value="#b93c3c" label="Pink"/>
-                                </datalist>
-                                <div v-if="errors['product.params']" v-for="error in errors['product.params']">
-                                    <InputErrorValidate :error="error"/>
-                                </div>
-                            </div>
+                            <label for="product_parent"
+                                   class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                            <input v-model="paramOption.value"
+                                   type="text"
+                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                   placeholder="Enter Value" required="">
                         </div>
-
                         <div>
                             <label for="product_parent"
                                    class="text-sm font-medium text-gray-900 block mb-2">Value</label>
@@ -351,7 +296,10 @@ export default {
 
                     </div>
                     <div>
-                        <div class="container mx-auto p-6">
+                        <div class="container mx-auto p-2">
+                            <div class="px-2 py-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <h1>Params Product</h1>
+                            </div>
                             <div class="flex flex-wrap gap-2">
                                 <div v-for="paramEntries in entries.params">
                                 <span
@@ -366,16 +314,14 @@ export default {
                     </svg>
                 </button>
             </span>
-
-
                                 </div>
                             </div>
-
                         </div>
+
                     </div>
 
                     <div class="py-4">
-                        <!--          File Upload              -->
+
                         <div class="rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md w-36">
                             <label for="upload" class="flex flex-col items-center gap-2 cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 fill-white stroke-indigo-500"
@@ -387,20 +333,17 @@ export default {
                             </label>
                             <input ref="image_input" multiple id="upload" type="file" class="hidden"
                                    @change="addImages"/>
-                            <div v-if="errors['product.images']" v-for="error in errors['product.images']">
-                                <InputErrorValidate :error="error"/>
-                            </div>
                         </div>
                     </div>
                     <div class="p-6 border-t border-gray-200 rounded-b">
 
-                        <button @click.prevent="storeProduct"
+                        <button @click.prevent="updateProduct"
                                 class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                                type="submit">Create
+                                type="submit">Update
                         </button>
-                        <button @click.prevent="storeProductToIndex"
+                        <button @click.prevent="updateProductToIndex"
                                 class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                                type="submit">Create to Index
+                                type="submit">Update to Index
                         </button>
                     </div>
                 </div>
@@ -410,25 +353,49 @@ export default {
         </div>
 
         <div class="">
-            <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <h1>Images</h1>
-            </div>
-            <!--        Images View     -->
-            <div v-for="image in imagesView" class="relative">
-                <div class="py-4 px-2 w-80">
-                    <div class="">
-                        <img :src="image.url" alt="" class="">
-                        <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
-                            <button @click.prevent="deleteImage(image)"
-                                    class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
-                                X
-                            </button>
+            <div v-if="cloneProduct.images.length !==0">
+                <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <h1>Images</h1>
+                </div>
+
+                <div v-for="image in entries.product.images" class="relative">
+                    <div class="py-4 px-2 w-80">
+                        <div class="">
+                            <img :src="image.url" alt="" class="">
+                            <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
+                                <button @click.prevent="deleteImage(image)"
+                                        class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
+                                    X
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div v-if="imagesView.length!==0">
+                <div class="px-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <h1>Images Preview</h1>
+                </div>
+                <div v-for="image in imagesView" class="relative">
+                    <div class="py-4 px-2 w-80">
+                        <div class="">
+                            <img :src="image.url" alt="" class="">
+                            <div class="absolute top-3 right-2 left-2 mx-2 mt-2 flex justify-between items-center">
+                                <button @click.prevent="deleteImagePreview(image)"
+                                        class="rounded-md  text-xs bg-red-600 text-white px-2 py-2 uppercase hover:bg-red-100 hover:text-red-600 transition ease-in-out duration-500 w-8">
+                                    X
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
+        <div v-if="success">
+            <WindowSuccessMessage :message="'Success Update Product'"/>
+        </div>
     </div>
 
 

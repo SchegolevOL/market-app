@@ -24,6 +24,7 @@ class ParamSeed extends Seeder
         Param::create([
             'title'=>'Цвет',
             'filter_type'=>3,
+            'label'=>'color',
         ]);
         Param::create([
             'title'=>'Материал',
