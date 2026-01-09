@@ -3,7 +3,6 @@ import {defineComponent} from 'vue'
 import ProductItem from "@/Components/Client/Product/ProductItem.vue";
 import ClientLayout from "@/Layouts/ClientLayout.vue";
 import {Link} from "@inertiajs/vue3";
-import {data} from "autoprefixer";
 import Breadcrumb from "@/Components/Client/Category/Breadcrumb.vue";
 
 export default defineComponent({
@@ -19,6 +18,7 @@ export default defineComponent({
         bredCrumbs: Array,
         category: {},
         params: Array,
+        categoryChildren: Array,
     },
     data() {
         return {
@@ -53,17 +53,17 @@ export default defineComponent({
             this.clear(this.filters.integer.from)
             this.clear(this.filters.integer.to)
 
-           axios.get(route('client.categories.products.index', this.category.id), {
+            axios.get(route('client.categories.products.index', this.category.id), {
                 params: this.filters
 
             })
                 .then(res => {
 
-                this.productsData = res.data;
+                    this.productsData = res.data;
 
-            })
+                })
         },
-        clear(obj){
+        clear(obj) {
 
             Object.keys(obj).forEach(key => {
                 if (!obj[key]) {
@@ -85,8 +85,31 @@ export default defineComponent({
         <div class="hidden md:flex flex-col w-64 rounded-2xl">
 
             <div class="flex flex-col flex-1 overflow-y-auto border-x-green-700">
-                <nav class="flex flex-col flex-1 overflow-y-auto  px-2 py-4 gap-10 rounded-2xl">
+                <nav class="flex flex-col flex-1 overflow-y-auto  px-2 py-4 gap-2 rounded-2xl">
                     <div class="">
+                        <div class="border-b border-gray-800">
+                            <h1>Category</h1>
+                            <div>
+                                <!--                               <div v-if="bredCrumbs.length>0">
+                                                                   <Link
+                                                                       :href="route('client.categories.products.index', breadcrumb.id)"
+                                                                       v-for="breadcrumb in bredCrumbs "
+                                                                        class="block py-2 px-2">
+                                                                       {{breadcrumb.title}}
+                                                                   </Link>
+                                                               </div>-->
+                                <div v-if="categoryChildren.length>0">
+                                    <Link
+                                        :href="route('client.categories.products.index', children.id)"
+                                        v-for="children in categoryChildren "
+                                        class="block py-2 px-2">
+                                        {{ children.title }}
+                                    </Link>
+                                </div>
+
+                            </div>
+                        </div>
+                        <h1>Params: </h1>
                         <template v-for="param in paramsData">
                             <div v-if="param.filter_type === 3" class="border-b border-gray-800">
                                 <div>
@@ -98,7 +121,8 @@ export default defineComponent({
 
                                         <input @change="setFilter(param, value)" type="checkbox" :value="value"
                                                :id="value"/>
-                                        <label v-if="param.label!=='color'" class="px-2 text-sm text-gray-800" :for="value">{{value}}</label>
+                                        <label v-if="param.label!=='color'" class="px-2 text-sm text-gray-800"
+                                               :for="value">{{ value }}</label>
                                         <label v-if="param.label==='color'" class="px-2 m-2" :for="value"
                                                :style="`background: ${value}; width: 32px; height: 16px;`"></label>
                                     </div>
@@ -130,7 +154,7 @@ export default defineComponent({
                         </template>
                         <div class="px-2 py-2">
                             <a @click.prevent="getPosts()"
-                                href="#"
+                               href="#"
                                class="block bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-1 rounded text-sm text-center">Фильтр</a>
                         </div>
                     </div>
@@ -139,30 +163,19 @@ export default defineComponent({
         </div>
 
         <!-- Main content -->
-        <div class="grid grid-cols-6 gap-4">
+        <div class="">
 
-            <div class="col-start-1 col-end-7">
+            <div class="col-span-4 col-start-2">
                 <Breadcrumb :bred-crumbs="bredCrumbs" :current="category.title"/>
             </div>
-            <div class="col-start-1 col-end-7">
-                <div class="p-4">
-                    <div class="">
 
-                        <div class="flex">
-
-
-                            <article class="w-3/4 border-gray-50 p-4">
-                                <div class="grid grid-cols-4 gap-4">
-                                    <div v-for="product in productsData" class="mx-2 my-2 ">
-                                        <ProductItem :product="product"/>
-                                    </div>
-
-                                </div>
-                            </article>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-6 gap-4">
+                <div v-for="product in productsData" class="mx-2 my-2 ">
+                    <ProductItem :product="product"/>
                 </div>
+
             </div>
+
         </div>
 
     </div>

@@ -18,6 +18,7 @@ class ParamWithsPivotValueResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'label' => $this->label,
             'value' =>$this->getOriginal('pivot_value'),
 
         ];

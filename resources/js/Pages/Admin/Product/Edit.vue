@@ -2,11 +2,13 @@
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
 import WindowSuccessMessage from "@/Components/Admin/General/WindowSuccessMessage.vue";
+import InputErrorValidate from "@/Components/Admin/General/InputErrorValidate.vue";
 
 
 export default {
     name: "Edit",
     components: {
+        InputErrorValidate,
         WindowSuccessMessage,
         Link
     },
@@ -112,7 +114,7 @@ export default {
                 id: this.paramOption.paramObject.id,
                 title: this.paramOption.paramObject.title,
                 value: this.paramOption.value,
-
+                label: this.paramOption.paramObject.label,
             }
 
             if (this.entries.params.every(enParam => enParam.id !== param.id || enParam.value !== param.value)) {
@@ -257,6 +259,7 @@ export default {
                                    class="text-sm font-medium text-gray-900 block mb-2">Select Param</label>
 
                             <select v-model="paramOption.paramObject"
+
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
                                 <option :value="{}" selected disabled>Select Product Parent</option>
                                 <option v-for="param in params" :value="param">{{
@@ -264,15 +267,52 @@ export default {
                                     }}
                                 </option>
                             </select>
+
                         </div>
                         <div>
-                            <label for="product_parent"
-                                   class="text-sm font-medium text-gray-900 block mb-2">Value</label>
-                            <input v-model="paramOption.value"
-                                   type="text"
-                                   class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                   placeholder="Enter Value" required="">
+                            <div  v-if="paramOption.paramObject.filter_type_title === 'integer' || paramOption.paramObject.filter_type_title === 'checkbox' && paramOption.paramObject.label !== 'color' ">
+                                <label for="product_parent"
+                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                                <input v-model="paramOption.value"
+                                       type="number"
+                                       class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                       placeholder="Enter Value" required="">
+
+                            </div>
+                            <div  v-if="paramOption.paramObject.filter_type_title === 'select'">
+                                <label for="product_parent"
+                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                                <input v-model="paramOption.value"
+                                       type="text"
+                                       class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                       placeholder="Enter Value" required="">
+
+                            </div>
+
+
+                            <div v-if="paramOption.paramObject.label === 'color' ">
+                                <label for="product_parent"
+                                       class="text-sm font-medium text-gray-900 block mb-2">Value</label>
+                                <input v-model="paramOption.value"
+                                       type="color" list="colors"
+
+                                       class="h-10 shadow-sm bg-gray-50 border border-gray-300 focus:ring-cyan-600 focus:border-cyan-600 block w-full">
+                                <datalist id="colors">
+                                    <option value="#ff0000" label="Red"/>
+                                    <option value="#008000" label="Green"/>
+                                    <option value="#0000ff" label="Blue"/>
+                                    <option value="#000001" label="Blak"/>
+                                    <option value="#ffffff" label="White"/>
+                                    <option value="#454545" label="Grey"/>
+                                    <option value="#ffea00" label="Yellow"/>
+                                    <option value="#ff7b00" label="Orange"/>
+                                    <option value="#8000ff" label="Purple"/>
+                                    <option value="#b93c3c" label="Pink"/>
+                                </datalist>
+
+                            </div>
                         </div>
+
                         <div>
                             <label for="product_parent"
                                    class="text-sm font-medium text-gray-900 block mb-2">Value</label>
@@ -294,16 +334,13 @@ export default {
 
                     </div>
                     <div>
-                        <div class="container mx-auto p-2">
-                            <div class="px-2 py-2 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <h1>Params Product</h1>
-                            </div>
+                        <div class="container mx-auto p-6">
                             <div class="flex flex-wrap gap-2">
-                                <div v-for="paramEntries in entries.params">
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                    {{ paramEntries.title }} - {{ paramEntries.value }}
-                                    <button @click.prevent="deleteParam(paramEntries)" type="button"
+                                <div v-for="params in entries.params">
+                                <span v-if="params.label !== 'color'"
+                                      class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                    {{ params.title }} - {{ params.value }}
+                                    <button @click.prevent="deleteParam(params)" type="button"
                                             class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
                                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                              fill="none" viewBox="0 0 14 14">
@@ -312,10 +349,28 @@ export default {
                     </svg>
                 </button>
             </span>
+                                    <span v-if="params.label === 'color'"
+                                          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                     {{ params.title }} -
+                                        <span
+                                            :style="`background: ${params.value}; width: 32px; height: 16px;`"
+                                            class="ml-2 inline-block px-3 py-3 rounded-full text-xs border border-green-600 mr-1"
+                                        ></span>
+                                    <button @click.prevent="deleteParam(params)" type="button"
+                                            class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
+                                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                             fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </span>
+
+
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
 
                     <div class="py-4">

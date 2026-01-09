@@ -14,27 +14,34 @@ use App\Services\ProductService;
 
 class CategoryController extends Controller
 {
+    public function index()
+    {
+        $categories = CategoryResource::collection(Category::whereNull('parent_id')->get())->resolve();
+        return inertia("Client/Category/Index", compact('categories'));
+    }
+
     public function productIndex(Category $category, ProductIndexRequest $request)
     {
         $data = $request->validated();
 
-        $categoryChildren = CategoryService::getCategoryChildren($category);
-        $products = ProductResource::collection(ProductService::indexByCategories($categoryChildren, $data))->resolve();
-        $params = ParamService::indexByCategories($categoryChildren);
+        $categoryTreeChildren = CategoryService::getCategoryChildren($category);
+        $products = ProductResource::collection(ProductService::indexByCategories($categoryTreeChildren, $data))->resolve();
+        $params = ParamService::indexByCategories($categoryTreeChildren);
         $params = ParamsWithValuesResource::collection($params)->resolve();
 
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
 
             return $products;
         }
 
         $bredCrumbs = CategoryResource::collection(CategoryService::getCategoryParents($category))->resolve();
-
+        $categoryChildren = CategoryResource::collection($category->children)->resolve();
 
         $category = CategoryResource::make($category)->resolve();
 
 
-
-        return inertia('Client/Category/ProductIndex', compact('products', 'bredCrumbs', 'category', 'params'));
+        return inertia('Client/Category/ProductIndex', compact('products', 'bredCrumbs', 'category', 'params', 'categoryChildren'));
     }
+
+
 }

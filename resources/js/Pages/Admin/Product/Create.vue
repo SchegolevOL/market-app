@@ -98,9 +98,13 @@ export default {
 
         },
         setParam() {
+
+            console.log(this.paramOption.value)
             var param = {
                 id: this.paramOption.paramObject.id,
                 title: this.paramOption.paramObject.title,
+               label: this.paramOption.paramObject.label,
+
                 value: this.paramOption.value,
 
             }
@@ -281,7 +285,7 @@ export default {
                             </div>
                         </div>
                         <div>
-                            <div  v-if="paramOption.paramObject.filter_type_title === 'integer' || paramOption.paramObject.filter_type_title === 'checkbox'">
+                            <div  v-if="paramOption.paramObject.filter_type_title === 'integer' || paramOption.paramObject.filter_type_title === 'checkbox' && paramOption.paramObject.label !== 'color' ">
                                 <label for="product_parent"
                                        class="text-sm font-medium text-gray-900 block mb-2">Value</label>
                                 <input v-model="paramOption.value"
@@ -310,13 +314,13 @@ export default {
                                        class="text-sm font-medium text-gray-900 block mb-2">Value</label>
                                 <input v-model="paramOption.value"
                                        type="color" list="colors"
-                                       class="h-10 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full"
-                                       placeholder="Enter Value" required="">
+
+                                       class="h-10 shadow-sm bg-gray-50 border border-gray-300 focus:ring-cyan-600 focus:border-cyan-600 block w-full">
                                 <datalist id="colors">
                                     <option value="#ff0000" label="Red"/>
                                     <option value="#008000" label="Green"/>
                                     <option value="#0000ff" label="Blue"/>
-                                    <option value="#000000" label="Blak"/>
+                                    <option value="#000001" label="Blak"/>
                                     <option value="#ffffff" label="White"/>
                                     <option value="#454545" label="Grey"/>
                                     <option value="#ffea00" label="Yellow"/>
@@ -353,11 +357,27 @@ export default {
                     <div>
                         <div class="container mx-auto p-6">
                             <div class="flex flex-wrap gap-2">
-                                <div v-for="paramEntries in entries.params">
-                                <span
+                                <div v-for="params in entries.params">
+                                <span v-if="params.label !== 'color'"
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                                    {{ paramEntries.title }} - {{ paramEntries.value }}
-                                    <button @click.prevent="deleteParam(paramEntries)" type="button"
+                                    {{ params.title }} - {{ params.value }}
+                                    <button @click.prevent="deleteParam(params)" type="button"
+                                            class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
+                                        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                             fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </span>
+                                    <span v-if="params.label === 'color'"
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                     {{ params.title }} -
+                                        <span
+                                          :style="`background: ${params.value}; width: 32px; height: 16px;`"
+                                          class="ml-2 inline-block px-3 py-3 rounded-full text-xs border border-green-600 mr-1"
+                                          ></span>
+                                    <button @click.prevent="deleteParam(params)" type="button"
                                             class="ml-2 inline-flex items-center p-0.5 text-sm bg-transparent rounded-sm hover:bg-blue-200 dark:hover:bg-blue-800">
                                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                              fill="none" viewBox="0 0 14 14">

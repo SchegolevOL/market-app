@@ -4,11 +4,17 @@ import {Link} from "@inertiajs/vue3";
 
 export default {
     name: "ClientLayout",
-    components: {Link}
+    components: {Link},
+    mounted() {
+        let recaptchaScript = document.createElement('script')
+        recaptchaScript.setAttribute('src', 'https://www.google.com/recaptcha/api.js')
+        document.head.appendChild(recaptchaScript)
+    }
 }
 </script>
 
 <template>
+
     <div class="grid grid-cols-1 gap-4">
 
         <div class="">
