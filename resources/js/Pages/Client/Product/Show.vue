@@ -23,9 +23,9 @@ export default {
         bredCrumbs: {},
     },
     data() {
-       return {
-           quantity: 1,
-       }
+        return {
+            quantity: 1,
+        }
 
     },
     methods: {
@@ -39,161 +39,183 @@ export default {
 
 <template>
 
-    <div class="flex">
-
-
-        <aside class="w-1/4 border-gray-900 min-h-screen">
+    <div class="grid grid-cols-5 grid-rows-3 gap-4">
+        <div class="col-span-1">
             <nav>
                 product
             </nav>
-
-        </aside>
-        <article class="w-3/4 border-gray-50 p-4">
-            <div class="flex">
+        </div>
 
 
-            </div>
-            <div class="bg-gray-50 text-gray-800 antialiased">
-                <main class="max-w-6xl mx-auto p-6 lg:p-10">
-                    <!-- Breadcrumb / Header -->
-                    <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-                        <div class="col-start-1 col-end-7">
-                            <Breadcrumb :bred-crumbs="bredCrumbs" :current="product.title"/>
-                        </div>
-                    </nav>
+        <div class="col-span-3 ...">
+            <article class=" border-gray-50 p-4">
 
-                    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                        <!-- LEFT: Images -->
-                        <div class="space-y-4">
-                            <ImagesPreview :images="product.images"
-                                           :discount="(((product.old_price-product.price)/product.price)*100).toFixed(2)"
-                                           :is-hit="true"/>
-
-                            <div class="bg-white rounded-xl p-4 shadow-sm">
-                                <h3 class="text-sm font-semibold text-gray-700 mb-2">Description</h3>
-                                <p class="text-sm text-gray-600 leading-relaxed">{{ product.description }}</p>
+                <div class="bg-gray-50 text-gray-800 antialiased">
+                    <main class=" mx-auto">
+                        <!-- Breadcrumb / Header -->
+                        <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+                            <div class="">
+                                <Breadcrumb :bred-crumbs="bredCrumbs" :current="product.title"/>
                             </div>
-                        </div>
+                        </nav>
+
+                        <section class="grid grid-cols-2 lg:grid-cols-2 gap-8 items-start">
+                            <!-- LEFT: Images -->
+                            <div class="space-y-4">
+                                <ImagesPreview :images="product.images"
+                                               :discount="(((product.old_price-product.price)/product.price)*100).toFixed(2)"
+                                               :is-hit="true"/>
+
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Description</h3>
+                                    <p class="text-sm text-gray-600 leading-relaxed">{{ product.description }}</p>
+                                </div>
+                            </div>
 
 
-                        <!-- RIGHT: Product Info -->
-                        <aside class="sticky top-6">
-                            <div class="rounded-xl shadow p-6 lg:p-8">
-                                <h1 class="text-2xl lg:text-3xl font-extrabold leading-tight">{{ product.title }}</h1>
+                            <!-- RIGHT: Product Info -->
 
-                                <div class="mt-4 flex items-end gap-4">
-                                    <div>
-                                        <div class="text-3xl lg:text-4xl font-extrabold price-shadow">
-                                            {{ product.price }}
+                            <div class="flex">
+
+                                <aside class="sticky top-6">
+                                    <div class="rounded-xl shadow p-6 lg:p-8">
+                                        <h1 class="text-2xl lg:text-3xl font-extrabold leading-tight">{{
+                                                product.title
+                                            }}</h1>
+
+                                        <div class="mt-4 flex items-end gap-4">
+                                            <div>
+                                                <div class="text-3xl lg:text-4xl font-extrabold price-shadow">
+                                                    {{ product.price }}
+                                                </div>
+                                                <div class="text-sm text-gray-400 line-through">{{
+                                                        product.old_price
+                                                    }}
+                                                </div>
+                                                <div v-if="product.old_price > product.price"
+                                                     class="text-sm text-green-600 font-medium mt-1">You save
+                                                    {{ product.old_price - product.price }}
+                                                </div>
+                                                <div class="text-xs text-gray-400 mt-1">Inclusive of all taxes</div>
+                                            </div>
+
+                                            <div class="ml-auto text-right">
+                                                <button aria-label="Add to wishlist"
+                                                        class="p-2 rounded-md border hover:bg-gray-50">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         class="h-5 w-5 text-pink-500"
+                                                         viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path
+                                                            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.656 3.172 11.83a4 4 0 010-5.656z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="text-sm text-gray-400 line-through">{{ product.old_price }}</div>
-                                        <div v-if="product.old_price > product.price" class="text-sm text-green-600 font-medium mt-1">You save
-                                            {{ product.old_price - product.price }}
+                                        <!--     Content                           -->
+                                        <div class="mt-5 border rounded-lg p-4 bg-gray-50 flex items-center gap-4">
+                                            <div class="flex-1 text-sm">
+                                                <div class="font-medium">Content</div>
+                                                <div class="text-xs text-gray-500">{{ product.content }}</div>
+                                            </div>
+
                                         </div>
-                                        <div class="text-xs text-gray-400 mt-1">Inclusive of all taxes</div>
-                                    </div>
+                                        <!-- Delivery & Stock -->
+                                        <div class="mt-5 border rounded-lg p-4 bg-gray-50 flex items-center gap-4">
+                                            <div class="flex-1 text-sm">
+                                                <div class="font-medium">Delivery in 10-15 mins</div>
+                                                <div class="text-xs text-gray-500">Shipment of 1 item</div>
+                                            </div>
+                                            <div class="text-sm font-medium text-green-600">In Stock</div>
+                                        </div>
 
-                                    <div class="ml-auto text-right">
-                                        <button aria-label="Add to wishlist"
-                                                class="p-2 rounded-md border hover:bg-gray-50">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-500"
-                                                 viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path
-                                                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.656 3.172 11.83a4 4 0 010-5.656z"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!--     Content                           -->
-                                <div class="mt-5 border rounded-lg p-4 bg-gray-50 flex items-center gap-4">
-                                    <div class="flex-1 text-sm">
-                                        <div class="font-medium">Content</div>
-                                        <div class="text-xs text-gray-500">{{product.content}}</div>
-                                    </div>
+                                        <!-- Quantity & Add -->
+                                        <div class="mt-5">
+                                            <label for="qty" class="block text-sm font-medium text-gray-700 mb-2">Quantity
+                                                <span
+                                                    class="text-xs text-gray-400">({{
+                                                        product.qty
+                                                    }} available)</span></label>
+                                            <div class="flex items-center gap-3">
+                                                <AddQuantity @quantity_change='changeQty'/>
 
-                                </div>
-                                <!-- Delivery & Stock -->
-                                <div class="mt-5 border rounded-lg p-4 bg-gray-50 flex items-center gap-4">
-                                    <div class="flex-1 text-sm">
-                                        <div class="font-medium">Delivery in 10-15 mins</div>
-                                        <div class="text-xs text-gray-500">Shipment of 1 item</div>
-                                    </div>
-                                    <div class="text-sm font-medium text-green-600">In Stock</div>
-                                </div>
+                                                <button id="addToCart"
+                                                        class="ml-auto flex-1 lg:flex-none bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 shadow">
+                                                    🛒 Add
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-gray-400 mt-2">Max order limit: <strong
+                                                class="text-gray-700">10 per customer</strong></p>
+                                        </div>
 
-                                <!-- Quantity & Add -->
-                                <div class="mt-5">
-                                    <label for="qty" class="block text-sm font-medium text-gray-700 mb-2">Quantity <span
-                                        class="text-xs text-gray-400">({{ product.qty }} available)</span></label>
-                                    <div class="flex items-center gap-3">
-                                        <AddQuantity @quantity_change = 'changeQty'/>
+                                        <hr class="my-6"/>
 
-                                        <button id="addToCart"
-                                                class="ml-auto flex-1 lg:flex-none bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg px-6 py-3 shadow">
-                                            🛒 Add
-                                        </button>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-2">Max order limit: <strong
-                                        class="text-gray-700">10 per customer</strong></p>
-                                </div>
-
-                                <hr class="my-6"/>
-
-                                <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-gray-600">
-                                    <div>
-                                        <dt class="text-xs text-gray-500">Category</dt>
-                                        <dd class="mt-1">{{ product.category.title }}</dd>
-                                    </div>
-                                    <div>
-                                        <dt class="text-xs text-gray-500">Product group</dt>
-                                        <dd class="mt-1">{{ product.product_group.title }}</dd>
-                                    </div>
-                                    <div>
-                                        <dt class="text-xs text-gray-500">Shipment</dt>
-                                        <dd class="mt-1">1 item</dd>
-                                    </div>
-                                    <div>
-                                        <dt class="text-xs text-gray-500">Params:</dt>
-                                        <dd v-for="param in product.params" class="mt-1 flex">
+                                        <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-gray-600">
+                                            <div>
+                                                <dt class="text-xs text-gray-500">Category</dt>
+                                                <dd class="mt-1">{{ product.category.title }}</dd>
+                                            </div>
+                                            <div>
+                                                <dt class="text-xs text-gray-500">Product group</dt>
+                                                <dd class="mt-1">{{ product.product_group.title }}</dd>
+                                            </div>
+                                            <div>
+                                                <dt class="text-xs text-gray-500">Shipment</dt>
+                                                <dd class="mt-1">1 item</dd>
+                                            </div>
+                                            <div>
+                                                <dt class="text-xs text-gray-500">Params:</dt>
+                                                <dd v-for="param in product.params" class="mt-1 flex">
                                             <span
                                                 class="inline-block px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">
                                                 {{ param.title }}:
                                             </span>
 
 
-                                            <span v-if="param.label!=='color'"
-                                                  class="inline-block px-3 py-1 rounded-full text-xs text-green-700 border border-green-600 mr-1 bg-green-50"
-                                                  v-for="value in param.value"> {{ value }}</span>
-                                            <span v-if="param.label==='color'"
-                                                  :style="`background: ${value}; width: 32px; height: 16px;`"
-                                                  class=" inline-block px-3 py-3 rounded-full text-xs border border-green-600 mr-1"
-                                                  v-for="value in param.value"></span>
-                                        </dd>
+                                                    <span v-if="param.label!=='color'"
+                                                          class="inline-block px-3 py-1 rounded-full text-xs text-green-700 border border-green-600 mr-1 bg-green-50"
+                                                          v-for="value in param.value"> {{ value }}</span>
+                                                    <span v-if="param.label==='color'"
+                                                          :style="`background: ${value}; width: 32px; height: 16px;`"
+                                                          class=" inline-block px-3 py-3 rounded-full text-xs border border-green-600 mr-1"
+                                                          v-for="value in param.value"></span>
+                                                </dd>
+
+                                            </div>
+                                        </dl>
 
                                     </div>
-                                </dl>
+
+
+                                    <!-- Mobile sticky CTA -->
+                                    <div id="mobileCta" class="fixed left-0 right-0 bottom-4 px-4 lg:hidden">
+                                        <div class="max-w-3xl mx-auto">
+                                            <button id="mobileAdd"
+                                                    class="w-full bg-green-600 text-white rounded-full py-3 font-semibold shadow-lg">
+                                                🛒 Add to Cart — ₹450
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </aside>
+
 
                             </div>
+                        </section>
+                    </main>
 
 
-                            <!-- Mobile sticky CTA -->
-                            <div id="mobileCta" class="fixed left-0 right-0 bottom-4 px-4 lg:hidden">
-                                <div class="max-w-3xl mx-auto">
-                                    <button id="mobileAdd"
-                                            class="w-full bg-green-600 text-white rounded-full py-3 font-semibold shadow-lg">
-                                        🛒 Add to Cart — ₹450
-                                    </button>
-                                </div>
-                            </div>
+                </div>
+            </article>
+        </div>
+        <div v-if="product.group_products.length>0" class="col-span-1 border">
+            <div class="">Похожие товары</div>
+            <div v-for="product in product.group_products" class="border-gray-900">
 
-                        </aside>
-                    </section>
-                </main>
-
-
+                <ProductItem :product="product"/>
             </div>
-        </article>
+        </div>
     </div>
+
 
 </template>
 

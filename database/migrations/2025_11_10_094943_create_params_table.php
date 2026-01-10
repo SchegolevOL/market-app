@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('params', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->foreignId('category_id')->index()->constrained('categories');
             $table->unsignedSmallInteger('filter_type');
             $table->timestamps();
         });

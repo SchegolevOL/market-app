@@ -22,7 +22,6 @@ class ProductIndexRequest extends FormRequest
     public function rules(): array
     {
 
-
         return [
 
             'integer'=>['nullable','array'],

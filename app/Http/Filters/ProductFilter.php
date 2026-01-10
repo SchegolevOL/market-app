@@ -123,7 +123,9 @@ class ProductFilter extends AbstractFilter
     /*Фильтры для Клиента*/
     public function integer(Builder $builder, $data)
     {
+
         if (isset($data['from'])) {
+
             $builder->whereHas('paramProduct', function ($query) use ($data) {
                 foreach ($data['from'] as $key => $value) {
                     $query->where('param_id', $key)->whereRaw('CAST(value AS INT) >= ?', $value);
@@ -131,8 +133,9 @@ class ProductFilter extends AbstractFilter
             });
         }
         if (isset($data['to'])) {
+
             $builder->whereHas('paramProduct', function ($query) use ($data) {
-                foreach ($data['filters']['integer']['to'] as $key => $value) {
+                foreach ($data['to'] as $key => $value) {
                     $query->where('param_id', $key)->whereRaw('CAST(value AS INT) <= ?', $value);
                 }
             });

@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Param\IndexRequest;
 use App\Http\Requests\Admin\Param\StoreRequest;
 use App\Http\Requests\Admin\Param\UpdateRequest;
+use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Param\ParamResource;
+use App\Models\Category;
 use App\Models\Param;
 use App\Services\ParamService;
 use Illuminate\Http\Response;
@@ -37,7 +39,8 @@ class ParamController extends Controller
     public function create()
     {
         $filterTypes = ParamFilterTypeEnum::collection();
-        return inertia('Admin/Param/Create', compact('filterTypes'));
+        $categories = CategoryResource::collection(Category::whereNull('parent_id')->get())->resolve();
+        return inertia('Admin/Param/Create', compact('filterTypes', 'categories'));
     }
 
     /**
@@ -66,7 +69,8 @@ class ParamController extends Controller
     {
         $filterTypes = ParamFilterTypeEnum::collection();
         $param = ParamResource::make($param)->resolve();
-        return inertia('Admin/Param/Edit', compact('param', 'filterTypes'));
+        $categories = CategoryResource::collection(Category::whereNull('parent_id')->get())->resolve();
+        return inertia('Admin/Param/Edit', compact('param', 'filterTypes', 'categories'));
     }
 
     /**

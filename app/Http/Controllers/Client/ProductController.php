@@ -21,10 +21,12 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+
         $bredCrumbs = CategoryService::getCategoryParents($product->category);
         $bredCrumbs = CategoryResource::collection($bredCrumbs->push($product->category))->resolve();
 
         $product = ProductWithGroupedParamResource::make($product)->resolve();
+
         return inertia('Client/Product/Show', compact('product', 'bredCrumbs'));
     }
 }

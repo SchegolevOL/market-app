@@ -26,6 +26,7 @@ class CategoryController extends Controller
 
         $categoryTreeChildren = CategoryService::getCategoryChildren($category);
         $products = ProductResource::collection(ProductService::indexByCategories($categoryTreeChildren, $data))->resolve();
+
         $params = ParamService::indexByCategories($categoryTreeChildren);
         $params = ParamsWithValuesResource::collection($params)->resolve();
 

@@ -20,7 +20,8 @@ class ParamResource extends JsonResource
             'title' => $this->title,
             'filter_type' => $this->filter_type,
             'filter_type_title' =>$this->filter_type_title,
-            'label' => $this->label
+            'category_id' => $this->category_id,
+            'label' => $this->label,
 
         ];
     }

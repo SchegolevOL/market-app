@@ -100,13 +100,13 @@ export default {
             </div>
         </div>
         <div class="">
-            <div class="flex flex-col flex-1 overflow-y-auto  h-screen">
+
 
 
                 <div class="p-4">
                     <slot/>
                 </div>
-            </div>
+
         </div>
     </div>
 

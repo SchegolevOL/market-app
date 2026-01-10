@@ -24,6 +24,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'param.title' => 'required|string',
+            'param.category_id' => 'required|integer|exists:categories,id',
             'param.filter_type' => 'required|integer|in:' . ParamFilterTypeEnum::valuesAsString()
         ];
     }

@@ -13,6 +13,7 @@ export default {
     layout: AdminLayout,
     props: {
         filterTypes: Array,
+        categories: Array,
     },
     data() {
         return {
@@ -87,6 +88,18 @@ export default {
                 <div class="p-6 space-y-6">
 
                     <div class="">
+                        <div class="col-span-6 sm:col-span-3 py-4">
+                            <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Category</label>
+
+                            <select v-model="entries.param.category_id"
+                                    class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
+                                    id="service" name="service">
+                                <option v-for="category in categories" :value="category.id">
+                                    {{category.title}}
+                                </option>
+                            </select>
+                        </div>
+
                         <div class="col-span-6 sm:col-span-3">
                             <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
                             <input v-model="entries.param.title" type="text" name="product-name" id="product-name"

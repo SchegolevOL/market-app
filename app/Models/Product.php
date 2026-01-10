@@ -42,6 +42,15 @@ class Product extends Model
         return $this->belongsTo(ProductGroup::class, 'product_group_id', 'id');
     }
 
+    public function getGroupProductsAttribute(): Collection
+    {
+        return $this->productGroup
+            ->products()
+            ->whereNot('parent_id', $this->parent_id)
+            ->distinct('parent_id')
+            ->get();
+    }
+
     public function scopeByCategories(Builder $builder, Collection $categoryChildren): Builder
     {
         return $builder->whereIn('category_id', $categoryChildren->pluck('id'))

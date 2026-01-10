@@ -20,6 +20,7 @@ class ProductWithGroupedParamResource extends JsonResource
         return [
             'id'=>$this->id,
             'product_group' => $this->productGroup,
+            'group_products' => ProductResource::collection($this->group_products)->resolve(),
             'category' => $this->category,
             'parent_id' => $this->parent_id,
             'title' => $this->title,
