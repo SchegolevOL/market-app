@@ -21,6 +21,7 @@ export default {
     props: {
         product: {},
         bredCrumbs: {},
+        paramProducts: Array,
     },
     data() {
         return {
@@ -154,13 +155,36 @@ export default {
                                                 <dt class="text-xs text-gray-500">Category</dt>
                                                 <dd class="mt-1">{{ product.category.title }}</dd>
                                             </div>
-                                            <div>
+                                            <
                                                 <dt class="text-xs text-gray-500">Product group</dt>
                                                 <dd class="mt-1">{{ product.product_group.title }}</dd>
                                             </div>
-                                            <div>
+                                            <div v-if="paramProducts.length>0">
                                                 <dt class="text-xs text-gray-500">Shipment</dt>
-                                                <dd class="mt-1">1 item</dd>
+                                                <dd v-for="paramProduct in paramProducts" class="mt-1 flex">
+                                            <span
+                                                class="inline-block px-3 py-1 rounded-full text-xs bg-green-50 text-green-700">
+                                                {{ paramProduct.title }}:
+                                            </span>
+                                                    <div v-if="paramProduct.data.length>0" class="flex">
+                                                        <div v-for="paramProductData in paramProduct.data" class="">
+                                                            <Link v-if="paramProductData.param.label ==='color'"
+                                                                  :href="route('client.products.show', paramProductData.product_id)"
+                                                                  :class="[paramProductData.product_id === product.id?'inline-block px-3 py-2 rounded-full text-xs border-2 border-blue-600 mr-1 w-8 h-6':'inline-block px-3 py-2 rounded-full text-xs border border-green-600 mr-1 w-8 h-6']"
+                                                                  :style="`background: ${paramProductData.value}; `"
+                                                                  ></Link>
+                                                            <Link v-if="paramProductData.param.label !=='color'"
+                                                                  :class="[paramProductData.product_id === product.id?'inline-block px-3 py-1 rounded-full text-xs border-2 border-blue-600 mr-1':'inline-block px-3 py-1 rounded-full text-xs border border-green-600 mr-1']"
+                                                                  :href="route('client.products.show', paramProductData.product_id)">{{
+                                                                    paramProductData.value
+                                                                }}</Link>
+                                                        </div>
+
+
+                                                    </div>
+                                                </dd>
+
+
                                             </div>
                                             <div>
                                                 <dt class="text-xs text-gray-500">Params:</dt>

@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
 class Product extends Model
 {
     use HasFilter;
+
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
@@ -29,14 +30,25 @@ class Product extends Model
 
     public function children(): HasMany
     {
-        return $this->hasMany(Product::class, 'parent_id','id');
+        return $this->hasMany(Product::class, 'parent_id', 'id');
     }
 
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'parent_id', 'id');
+    }
 
+    public function siblingProducts()
+    {
+
+        //return $this->parent->children()->whereNot('id', $this->id);
+        return $this->parent->children();
+    }
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
+
     public function productGroup(): BelongsTo
     {
         return $this->belongsTo(ProductGroup::class, 'product_group_id', 'id');
@@ -67,6 +79,7 @@ class Product extends Model
     {
         return $this->children()->exists();
     }
+
     public function getGroupedParamsAttribute()
     {
         return $this->params->groupBy('title')->map(function ($param) {
@@ -77,8 +90,6 @@ class Product extends Model
             ];
         })->values()->toArray();
     }
-
-
 
 
 }
