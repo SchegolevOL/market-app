@@ -155,7 +155,7 @@ export default {
                                                 <dt class="text-xs text-gray-500">Category</dt>
                                                 <dd class="mt-1">{{ product.category.title }}</dd>
                                             </div>
-                                            <
+                                            <div>
                                                 <dt class="text-xs text-gray-500">Product group</dt>
                                                 <dd class="mt-1">{{ product.product_group.title }}</dd>
                                             </div>
@@ -168,6 +168,7 @@ export default {
                                             </span>
                                                     <div v-if="paramProduct.data.length>0" class="flex">
                                                         <div v-for="paramProductData in paramProduct.data" class="">
+
                                                             <Link v-if="paramProductData.param.label ==='color'"
                                                                   :href="route('client.products.show', paramProductData.product_id)"
                                                                   :class="[paramProductData.product_id === product.id?'inline-block px-3 py-2 rounded-full text-xs border-2 border-blue-600 mr-1 w-8 h-6':'inline-block px-3 py-2 rounded-full text-xs border border-green-600 mr-1 w-8 h-6']"

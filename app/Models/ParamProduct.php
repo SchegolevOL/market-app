@@ -22,7 +22,9 @@ class ParamProduct extends Model
 
     public function scopeGetGroupedByParams(Builder $builder, Product $product): Builder
     {
-        return ParamProduct::whereIn('product_id', $product->siblingProducts->pluck('id'))
+        return ParamProduct::whereHas('param', function ($b){
+            return $b->where('is_show_in_card', true);
+        })->whereIn('product_id', $product->siblingProducts->pluck('id'))
             ->with('param');
     }
 }
