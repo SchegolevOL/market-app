@@ -22,8 +22,13 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string',
-
+            'title' => [
+                'required',
+                'string',
+                \Illuminate\Validation\Rule::unique('product_groups', 'title')
+                    ->where('category_id', $this->input('category_id')),
+            ],
+            'category_id' => 'required|exists:categories,id',
         ];
     }
 }

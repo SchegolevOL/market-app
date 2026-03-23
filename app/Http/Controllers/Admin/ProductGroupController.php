@@ -45,7 +45,6 @@ class ProductGroupController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        ;
         $data = $request->validated();
         $productGroup = ProductGroupService::store($data);
 

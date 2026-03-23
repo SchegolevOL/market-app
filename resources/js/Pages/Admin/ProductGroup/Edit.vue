@@ -34,7 +34,7 @@ export default {
                 });
         },
         updateProductGroupToIndex() {
-            axios.patch(route('admin.product-groups.update', this.productGroup), this.productGroup)
+            axios.patch(route('admin.product-groups.update', this.entries.productGroup.id), this.entries)
                 .then(function () {
                         window.location.replace(route('admin.product-groups.index'));
                     }

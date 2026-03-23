@@ -43,11 +43,14 @@ export default {
             })
         },
         updateCategoryToIndex() {
-            axios.post(route('admin.categories.update'), this.category)
-                .then(function () {
-                        window.location.replace(route('admin.categories.index'));
-                    }
-                )
+            axios.post(route('admin.categories.update', this.entries.category.id), this.entries, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+
+            }).then(res => {
+                window.location.replace(route('admin.categories.index'));
+            })
         },
 
         addImages(e) {

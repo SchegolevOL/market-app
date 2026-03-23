@@ -33,7 +33,7 @@ export default {
 
     methods: {
         storeCategory() {
-            console.log(this.entries);
+
 
             axios.post(route('admin.categories.store'), this.entries, {
                 headers: {
@@ -53,7 +53,12 @@ export default {
 
         },
         storeCategoryToIndex() {
-            axios.post(route('admin.categories.store'), this.entries)
+
+            axios.post(route('admin.categories.store'), this.entries,{
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
                 .then(function () {
                         window.location.replace(route('admin.categories.index'));
 
