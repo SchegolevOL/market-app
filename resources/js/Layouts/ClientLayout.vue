@@ -1,20 +1,61 @@
 <script>
-import {defineComponent, ref} from 'vue'
-import {Link} from "@inertiajs/vue3";
+import {defineComponent, ref, computed, onMounted, onUnmounted} from 'vue'
+import {Link, usePage, router} from "@inertiajs/vue3";
 
 export default {
     name: "ClientLayout",
     components: {Link},
     setup() {
+        const page = usePage();
         const isMobileMenuOpen = ref(false);
+        const isUserMenuOpen = ref(false);
+        const userMenuRef = ref(null);
+
+        const user = computed(() => {
+            const u = page.props.auth?.user || null;
+            console.log('Auth user:', u);
+            return u;
+        });
 
         const toggleMobileMenu = () => {
             isMobileMenuOpen.value = !isMobileMenuOpen.value;
         };
 
+        const toggleUserMenu = () => {
+            isUserMenuOpen.value = !isUserMenuOpen.value;
+        };
+
+        const closeUserMenu = () => {
+            isUserMenuOpen.value = false;
+        };
+
+        const handleClickOutside = (event) => {
+            if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
+                closeUserMenu();
+            }
+        };
+
+        const logout = () => {
+            router.post(route('logout'));
+        };
+
+        onMounted(() => {
+            document.addEventListener('click', handleClickOutside);
+        });
+
+        onUnmounted(() => {
+            document.removeEventListener('click', handleClickOutside);
+        });
+
         return {
             isMobileMenuOpen,
-            toggleMobileMenu
+            isUserMenuOpen,
+            userMenuRef,
+            user,
+            toggleMobileMenu,
+            toggleUserMenu,
+            closeUserMenu,
+            logout
         };
     },
     mounted() {
@@ -106,21 +147,91 @@ export default {
                         </Link>
 
                         <!-- Auth Buttons -->
-                        <div class="hidden sm:flex items-center gap-2">
-                            <Link
-                                :href="route('login')"
-                                class="px-5 py-2.5 text-sm font-medium text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:border-teal-500 hover:text-teal-600 transition-all duration-200"
-                            >
-                                Войти
-                            </Link>
-                            <Link
-                                :href="route('register')"
-                                class="px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                            >
-                                Регистрация
-                            </Link>
-                        </div>
+                        <template v-if="user">
+                            <div ref="userMenuRef" class="relative">
+                                <button
+                                    type="button"
+                                    @click="toggleUserMenu"
+                                    class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+                                >
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+                                        {{ user.name.charAt(0).toUpperCase() }}
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ user.name }}</span>
+                                    <svg
+                                        class="w-4 h-4 text-gray-500"
+                                        :class="{ 'rotate-180': isUserMenuOpen }"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
 
+                                <transition
+                                    enter-active-class="transition duration-200 ease-out"
+                                    enter-from-class="opacity-0 -translate-y-2"
+                                    enter-to-class="opacity-100 translate-y-0"
+                                    leave-active-class="transition duration-150 ease-in"
+                                    leave-from-class="opacity-100 translate-y-0"
+                                    leave-to-class="opacity-0 -translate-y-2"
+                                >
+                                    <div
+                                        v-if="isUserMenuOpen"
+                                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
+                                    >
+                                        <Link
+
+                                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-all"
+                                            @click="closeUserMenu"
+                                        >
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                            Профиль
+                                        </Link>
+                                        <Link
+                                            :href="route('client.cards.index')"
+                                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-all"
+                                            @click="closeUserMenu"
+                                        >
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                            </svg>
+                                            Корзина
+                                        </Link>
+                                        <hr class="my-2 border-gray-100">
+                                        <button
+                                            @click="logout"
+                                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-all"
+                                        >
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                            </svg>
+                                            Выход
+                                        </button>
+                                    </div>
+                                </transition>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="hidden sm:flex items-center gap-2">
+                                <Link
+                                    :href="route('login')"
+                                    class="px-5 py-2.5 text-sm font-medium text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:border-teal-500 hover:text-teal-600 transition-all duration-200"
+                                >
+                                    Войти
+                                </Link>
+                                <Link
+                                    :href="route('register')"
+                                    class="px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                                >
+                                    Регистрация
+                                </Link>
+                            </div>
+                        </template>
                         <!-- Mobile Menu Button -->
                         <button
                             @click="toggleMobileMenu"
@@ -190,18 +301,49 @@ export default {
                             Контакты
                         </Link>
                         <div class="pt-4 border-t border-gray-100 space-y-2">
-                            <Link
-                                :href="route('login')"
-                                class="block w-full px-4 py-3 text-center text-base font-medium text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:border-teal-500 hover:text-teal-600 transition-all"
-                            >
-                                Войти
-                            </Link>
-                            <Link
-                                :href="route('register')"
-                                class="block w-full px-4 py-3 text-center text-base font-medium text-white rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 transition-all"
-                            >
-                                Регистрация
-                            </Link>
+                            <template v-if="user">
+                                <div class="flex items-center gap-3 px-4 py-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold">
+                                        {{ user.name.charAt(0).toUpperCase() }}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ user.name }}</p>
+                                        <p class="text-xs text-gray-500">{{ user.email }}</p>
+                                    </div>
+                                </div>
+                                <Link
+                                    :href="route('profile.edit')"
+                                    class="block w-full px-4 py-3 text-left text-base font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:text-teal-600 transition-all"
+                                >
+                                    Профиль
+                                </Link>
+                                <Link
+                                    :href="route('client.cards.index')"
+                                    class="block w-full px-4 py-3 text-left text-base font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:text-teal-600 transition-all"
+                                >
+                                    Корзина
+                                </Link>
+                                <button
+                                    @click="logout"
+                                    class="block w-full px-4 py-3 text-left text-base font-medium text-red-600 rounded-lg hover:bg-red-50 transition-all"
+                                >
+                                    Выход
+                                </button>
+                            </template>
+                            <template v-else>
+                                <Link
+                                    :href="route('login')"
+                                    class="block w-full px-4 py-3 text-center text-base font-medium text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:border-teal-500 hover:text-teal-600 transition-all"
+                                >
+                                    Войти
+                                </Link>
+                                <Link
+                                    :href="route('register')"
+                                    class="block w-full px-4 py-3 text-center text-base font-medium text-white rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 transition-all"
+                                >
+                                    Регистрация
+                                </Link>
+                            </template>
                         </div>
                     </div>
                 </div>

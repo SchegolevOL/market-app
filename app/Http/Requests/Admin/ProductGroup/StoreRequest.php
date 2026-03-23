@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\ProductGroup;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class StoreRequest extends FormRequest
             'title' => [
                 'required',
                 'string',
-                \Illuminate\Validation\Rule::unique('product_groups', 'title')
+                Rule::unique('product_groups', 'title')
                     ->where('category_id', $this->input('category_id')),
             ],
             'category_id' => 'required|exists:categories,id',
