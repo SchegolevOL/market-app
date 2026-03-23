@@ -1,138 +1,451 @@
 <script>
-import {Link} from "@inertiajs/vue3";
+import {Link, usePage} from "@inertiajs/vue3";
+import {ref, computed, onMounted, onUnmounted} from "vue";
 
 export default {
     name: "AdminLayout",
-    components:{
+    components: {
         Link
-    }
+    },
+
+    setup() {
+        const page = usePage();
+        const isSidebarOpen = ref(true);
+        const isUserMenuOpen = ref(false);
+        const isNotificationOpen = ref(false);
+        const dropdownRef = ref(null);
+
+        const toggleSidebar = () => {
+            isSidebarOpen.value = !isSidebarOpen.value;
+        };
+
+        const toggleUserMenu = () => {
+            isUserMenuOpen.value = !isUserMenuOpen.value;
+        };
+
+        const toggleNotification = () => {
+            isNotificationOpen.value = !isNotificationOpen.value;
+        };
+
+        const closeAllDropdowns = () => {
+            isUserMenuOpen.value = false;
+            isNotificationOpen.value = false;
+        };
+
+        const handleClickOutside = (event) => {
+            if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+                closeAllDropdowns();
+            }
+        };
+
+        onMounted(() => {
+            document.addEventListener('click', handleClickOutside);
+        });
+
+        onUnmounted(() => {
+            document.removeEventListener('click', handleClickOutside);
+        });
+
+        const navigation = [
+            {
+                name: 'Dashboard',
+                href: route('dashboard'),
+                icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+                match: ['Dashboard/Index'],
+            },
+            {
+                name: 'Категории',
+                href: route('admin.categories.index'),
+                icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z',
+                match: ['Category'],
+            },
+            {
+                name: 'Товары',
+                href: route('admin.products.index'),
+                icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+                match: ['Product/Index', 'Product/Create', 'Product/Edit', 'Product/Show', 'Product/CreateChild', 'Product/Replicate'],
+            },
+            {
+                name: 'Параметры',
+                href: route('admin.params.index'),
+                icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+                match: ['Param'],
+            },
+            {
+                name: 'Группы товаров',
+                href: route('admin.product-groups.index'),
+                icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+                match: ['ProductGroup'],
+            },
+        ];
+
+        const isActive = (item) => {
+            const currentComponent = page.component.value || page.component;
+            // Для Товаров проверяем точное совпадение, чтобы не совпадало с ProductGroup
+            if (item.name === 'Товары') {
+                return item.match.some(pattern => currentComponent.includes(pattern));
+            }
+            // Для Групп товаров исключаем совпадение с просто Product
+            if (item.name === 'Группы товаров') {
+                return item.match.some(pattern => currentComponent.includes(pattern)) && !currentComponent.includes('Product/Index') && !currentComponent.includes('Product/Create') && !currentComponent.includes('Product/Edit') && !currentComponent.includes('Product/Show');
+            }
+            return item.match.some(pattern => currentComponent.includes(pattern));
+        };
+
+        return {
+            isSidebarOpen,
+            isUserMenuOpen,
+            isNotificationOpen,
+            toggleSidebar,
+            toggleUserMenu,
+            toggleNotification,
+            navigation,
+            isActive,
+            dropdownRef,
+        };
+    },
 }
 </script>
 
 <template>
+    <div class="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
+        <!-- Sidebar Backdrop (Mobile) -->
+        <transition
+            enter-active-class="transition-opacity ease-linear duration-300"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition-opacity ease-linear duration-300"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div
+                v-if="isSidebarOpen"
+                @click="isSidebarOpen = false"
+                class="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 md:hidden"
+            ></div>
+        </transition>
 
-    <div class="flex h-screen bg-gray-100">
-
-        <!-- sidebar -->
-        <div class="hidden md:flex flex-col w-64 bg-gray-800 rounded-2xl">
-
-            <div class="flex flex-col flex-1 overflow-y-auto">
-                <nav class="flex flex-col flex-1 overflow-y-auto bg-gradient-to-b from-gray-700 to-blue-500 px-2 py-4 gap-10 rounded-2xl">
-                    <div>
-                        <Link :href="route('dashboard')" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            Dashboard
-                        </Link>
+        <!-- Sidebar -->
+        <aside
+            :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+            class="fixed inset-y-0 left-0 z-30 w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 shadow-2xl"
+        >
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-20 px-6 border-b border-slate-700/50">
+                <Link :href="route('dashboard')" class="flex items-center gap-3 group">
+                    <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl shadow-lg group-hover:shadow-emerald-500/50 transition-shadow duration-200">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
                     </div>
-                    <div class="flex flex-col flex-1 gap-3">
-                        <Link :href="route('admin.categories.index')" class="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-400 hover:bg-opacity-25 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="margin-right: 8px">
-                                <path fill="currentColor" fill-rule="evenodd" d="M11.293 3.293a1 1 0 0 1 1.414 0l6 6l2 2a1 1 0 0 1-1.414 1.414L19 12.414V19a2 2 0 0 1-2 2h-3a1 1 0 0 1-1-1v-3h-2v3a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2v-6.586l-.293.293a1 1 0 0 1-1.414-1.414l2-2z" clip-rule="evenodd" />
-                            </svg>
-                            Category
-                        </Link>
-                        <Link :href="route('admin.products.index')" class="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-400 hover:bg-opacity-25 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" style="margin-right: 8px">
-                                <path fill="currentColor" d="M12 4a5 5 0 1 1-5 5a5 5 0 0 1 5-5m0-2a7 7 0 1 0 7 7a7 7 0 0 0-7-7m10 28h-2v-5a5 5 0 0 0-5-5H9a5 5 0 0 0-5 5v5H2v-5a7 7 0 0 1 7-7h6a7 7 0 0 1 7 7zm0-26h10v2H22zm0 5h10v2H22zm0 5h7v2h-7z" />
-                            </svg>
-                            Product
-                        </Link>
-                        <Link :href="route('admin.params.index')" class="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-400 hover:bg-opacity-25 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="margin-right: 8px">
-                                <path fill="none" stroke="currentColor" stroke-width="2" d="M16 7h3v4h-3zm-7 8h11M9 11h4M9 7h4M6 18.5a2.5 2.5 0 1 1-5 0V7h5.025M6 18.5V3h17v15.5a2.5 2.5 0 0 1-2.5 2.5h-17" />
-                            </svg>
-                            Param
-                        </Link>
-                        <Link :href="route('admin.product-groups.index')" class="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-400 hover:bg-opacity-25 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" style="margin-right: 8px">
-                                <path fill="currentColor" d="M21.053 20.8c-1.132-.453-1.584-1.698-1.584-1.698s-.51.282-.51-.51s.51.51 1.02-2.548c0 0 1.413-.397 1.13-3.68h-.34s.85-3.51 0-4.7c-.85-1.188-1.188-1.98-3.057-2.547s-1.188-.454-2.547-.396c-1.36.058-2.492.793-2.492 1.19c0 0-.85.056-1.188.396c-.34.34-.906 1.924-.906 2.32s.283 3.06.566 3.625l-.337.114c-.284 3.283 1.13 3.68 1.13 3.68c.51 3.058 1.02 1.756 1.02 2.548s-.51.51-.51.51s-.452 1.245-1.584 1.698c-1.132.452-7.416 2.886-7.927 3.396c-.512.51-.454 2.888-.454 2.888H29.43s.06-2.377-.452-2.888c-.51-.51-6.795-2.944-7.927-3.396zm-12.47-.172c-.1-.18-.148-.31-.148-.31s-.432.24-.432-.432s.432.432.864-2.16c0 0 1.2-.335.96-3.118h-.29s.144-.59.238-1.334a10.01 10.01 0 0 1 .037-.996l.038-.426c-.02-.492-.107-.94-.312-1.226c-.72-1.007-1.008-1.68-2.59-2.16c-1.584-.48-1.01-.384-2.16-.335c-1.152.05-2.112.672-2.112 1.01c0 0-.72.047-1.008.335c-.27.27-.705 1.462-.757 1.885v.28c.048.654.26 2.45.47 2.873l-.286.096c-.24 2.782.96 3.118.96 3.118c.43 2.59.863 1.488.863 2.16s-.432.43-.432.43s-.383 1.058-1.343 1.44l-.232.092v5.234h.575c-.03-1.278.077-2.927.746-3.594c.357-.355 1.524-.94 6.353-2.862zm22.33-9.056c-.04-.378-.127-.715-.292-.946c-.718-1.008-1.007-1.68-2.59-2.16c-1.583-.48-1.007-.384-2.16-.335c-1.15.05-2.11.672-2.11 1.01c0 0-.72.047-1.008.335c-.27.272-.71 1.472-.758 1.89h.033l.08.914c.02.23.022.435.027.644c.09.666.21 1.35.33 1.59l-.286.095c-.24 2.782.96 3.118.96 3.118c.432 2.59.863 1.488.863 2.16s-.43.43-.43.43s-.054.143-.164.34c4.77 1.9 5.927 2.48 6.28 2.833c.67.668.774 2.316.745 3.595h.48V21.78l-.05-.022c-.96-.383-1.344-1.44-1.344-1.44s-.433.24-.433-.43s.433.43.864-2.16c0 0 .804-.23.963-1.84V14.66c0-.018 0-.033-.003-.05h-.29s.216-.89.293-1.862z" />
-                            </svg>
-
-                            Product Group
-                        </Link>
-                        <a href="#" class="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-400 hover:bg-opacity-25 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="margin-right: 8px">
-                                <path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a9.89 9.89 0 0 0 2.26 6.33l-2 2a1 1 0 0 0-.21 1.09A1 1 0 0 0 3 22h9a10 10 0 0 0 0-20m0 18H5.41l.93-.93a1 1 0 0 0 0-1.41A8 8 0 1 1 12 20m5-9H7a1 1 0 0 0 0 2h10a1 1 0 0 0 0-2m-2 4H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2M9 9h6a1 1 0 0 0 0-2H9a1 1 0 0 0 0 2" />
-                            </svg>
-                            comments
-                        </a>
-                    </div>
-                </nav>
+                    <span class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                        Market App
+                    </span>
+                </Link>
+                <button @click="isSidebarOpen = false" class="md:hidden text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-        </div>
 
-        <!-- Main content -->
-        <div class="flex flex-col flex-1 overflow-y-auto">
-            <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200">
-<!--                <div class="flex items-center px-4">
-
-                    <div class="relative mx-auto text-gray-600">
-
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <div class="mb-6">
+                    <p class="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                        Основное меню
+                    </p>
+                    <div class="space-y-1">
+                        <Link
+                            v-for="item in navigation"
+                            :key="item.name"
+                            :href="item.href"
+                            :class="[
+                                isActive(item)
+                                    ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-l-4 border-emerald-300 shadow-lg shadow-emerald-500/30'
+                                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white border-l-4 border-transparent',
+                                'group flex items-center px-4 py-3 text-sm font-medium rounded-r-xl transition-all duration-200'
+                            ]"
+                        >
+                            <svg
+                                :class="[
+                                    isActive(item) ? 'text-white' : 'text-slate-400 group-hover:text-white',
+                                    'mr-3 h-5 w-5 flex-shrink-0 transition-colors duration-200'
+                                ]"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon"/>
+                            </svg>
+                            {{ item.name }}
+                        </Link>
                     </div>
                 </div>
-                &lt;!&ndash; notification &ndash;&gt;
-                <div class="flex items-center space-x-4 mr-4">
-                    <a href="#" class="text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M6.429 2.413a.75.75 0 0 0-1.13-.986l-1.292 1.48a4.75 4.75 0 0 0-1.17 3.024L2.78 8.65a.75.75 0 1 0 1.5.031l.056-2.718a3.25 3.25 0 0 1 .801-2.069z" />
-                            <path fill="currentColor" fill-rule="evenodd" d="M6.237 7.7a4.214 4.214 0 0 1 4.206-3.95H11V3a1 1 0 1 1 2 0v.75h.557a4.214 4.214 0 0 1 4.206 3.95l.221 3.534a7.376 7.376 0 0 0 1.308 3.754a1.617 1.617 0 0 1-1.135 2.529l-3.407.408V19a2.75 2.75 0 1 1-5.5 0v-1.075l-3.407-.409a1.617 1.617 0 0 1-1.135-2.528a7.377 7.377 0 0 0 1.308-3.754zm4.206-2.45a2.714 2.714 0 0 0-2.709 2.544l-.22 3.534a8.877 8.877 0 0 1-1.574 4.516a.117.117 0 0 0 .082.183l3.737.449c1.489.178 2.993.178 4.482 0l3.737-.449a.117.117 0 0 0 .082-.183a8.876 8.876 0 0 1-1.573-4.516l-.221-3.534a2.714 2.714 0 0 0-2.709-2.544zm1.557 15c-.69 0-1.25-.56-1.25-1.25v-.75h2.5V19c0 .69-.56 1.25-1.25 1.25" clip-rule="evenodd" />
-                            <path fill="currentColor" d="M17.643 1.355a.75.75 0 0 0-.072 1.058l1.292 1.48a3.25 3.25 0 0 1 .8 2.07l.057 2.717a.75.75 0 0 0 1.5-.031l-.057-2.718a4.75 4.75 0 0 0-1.17-3.024l-1.292-1.48a.75.75 0 0 0-1.058-.072" />
-                        </svg>
-                    </a>
-                    &lt;!&ndash; parametre &ndash;&gt;
-                    <a href="#" class="text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19.9 12.66a1 1 0 0 1 0-1.32l1.28-1.44a1 1 0 0 0 .12-1.17l-2-3.46a1 1 0 0 0-1.07-.48l-1.88.38a1 1 0 0 1-1.15-.66l-.61-1.83a1 1 0 0 0-.95-.68h-4a1 1 0 0 0-1 .68l-.56 1.83a1 1 0 0 1-1.15.66L5 4.79a1 1 0 0 0-1 .48L2 8.73a1 1 0 0 0 .1 1.17l1.27 1.44a1 1 0 0 1 0 1.32L2.1 14.1a1 1 0 0 0-.1 1.17l2 3.46a1 1 0 0 0 1.07.48l1.88-.38a1 1 0 0 1 1.15.66l.61 1.83a1 1 0 0 0 1 .68h4a1 1 0 0 0 .95-.68l.61-1.83a1 1 0 0 1 1.15-.66l1.88.38a1 1 0 0 0 1.07-.48l2-3.46a1 1 0 0 0-.12-1.17ZM18.41 14l.8.9l-1.28 2.22l-1.18-.24a3 3 0 0 0-3.45 2L12.92 20h-2.56L10 18.86a3 3 0 0 0-3.45-2l-1.18.24l-1.3-2.21l.8-.9a3 3 0 0 0 0-4l-.8-.9l1.28-2.2l1.18.24a3 3 0 0 0 3.45-2L10.36 4h2.56l.38 1.14a3 3 0 0 0 3.45 2l1.18-.24l1.28 2.22l-.8.9a3 3 0 0 0 0 3.98m-6.77-6a4 4 0 1 0 4 4a4 4 0 0 0-4-4m0 6a2 2 0 1 1 2-2a2 2 0 0 1-2 2" />
-                        </svg>
-                    </a>
-                    &lt;!&ndash; logout &ndash;&gt;
-                    <a href="#" class="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M5 11h8v2H5v3l-5-4l5-4zm-1 7h2.708a8 8 0 1 0 0-12H4a9.985 9.985 0 0 1 8-4c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.985 9.985 0 0 1-8-4" />
-                        </svg>
-                        <span class="font-bold">Logout</span>
-                    </a>
-                </div>-->
 
+                <!-- Additional Links -->
+                <div>
+                    <p class="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                        Дополнительно
+                    </p>
+                    <div class="space-y-1">
+                        <a href="#" class="group flex items-center px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-r-xl transition-all duration-200 border-l-4 border-transparent">
+                            <svg class="mr-3 h-5 w-5 text-slate-400 group-hover:text-white transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            </svg>
+                            Сообщения
+                            <span class="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">3</span>
+                        </a>
+                        <a href="#" class="group flex items-center px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-r-xl transition-all duration-200 border-l-4 border-transparent">
+                            <svg class="mr-3 h-5 w-5 text-slate-400 group-hover:text-white transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Аналитика
+                        </a>
+                        <a href="#" class="group flex items-center px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-r-xl transition-all duration-200 border-l-4 border-transparent">
+                            <svg class="mr-3 h-5 w-5 text-slate-400 group-hover:text-white transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Настройки
+                        </a>
+                    </div>
+                </div>
+            </nav>
 
-
-
-
-
-
+            <!-- User Info (Bottom Sidebar) -->
+            <div class="p-4 border-t border-slate-700/50">
+                <div class="flex items-center gap-3 px-4 py-3 bg-slate-700/30 rounded-xl">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                            A
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-white truncate">{{$attrs.auth.user.name}}</p>
+                        <p class="text-xs text-slate-400 truncate">{{$attrs.auth.user.email}}</p>
+                    </div>
+                </div>
             </div>
+        </aside>
 
-            <div class="p-4">
+        <!-- Main Content Wrapper -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- Top Navigation Bar -->
+            <header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-sm">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                    <!-- Left Side: Menu Toggle & Search -->
+                    <div class="flex items-center gap-4 flex-1">
+                        <button @click="isSidebarOpen = true" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+
+                        <!-- Search Bar -->
+                        <div class="relative max-w-md w-full lg:max-w-xs">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Поиск..."
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-slate-600 rounded-xl leading-5 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-all duration-200"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Actions -->
+                    <div ref="dropdownRef" class="flex items-center gap-2 sm:gap-4">
+                        <!-- Notifications -->
+                        <div class="relative">
+                            <button
+                                @click.stop="toggleNotification"
+                                class="relative p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+                            >
+                                <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                            </button>
+
+                            <!-- Notification Dropdown -->
+                            <transition
+                                enter-active-class="transition ease-out duration-200"
+                                enter-from-class="opacity-0 scale-95"
+                                enter-to-class="opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-150"
+                                leave-from-class="opacity-100 scale-100"
+                                leave-to-class="opacity-0 scale-95"
+                            >
+                                <div
+                                    v-if="isNotificationOpen"
+                                    @click.stop
+                                    class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden z-50"
+                                >
+                                    <div class="px-4 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+                                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Уведомления</h3>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                            3 новых
+                                        </span>
+                                    </div>
+                                    <div class="max-h-96 overflow-y-auto">
+                                        <a href="#" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-150 border-b border-gray-100 dark:border-slate-700">
+                                            <div class="flex items-start gap-3">
+                                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Новый заказ #1234</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Клиент оформил заказ на сумму 5000₽</p>
+                                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">5 минут назад</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-150 border-b border-gray-100 dark:border-slate-700">
+                                            <div class="flex items-start gap-3">
+                                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Новый пользователь</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Зарегистрировался новый клиент</p>
+                                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">15 минут назад</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
+                                            <div class="flex items-start gap-3">
+                                                <div class="flex-shrink-0 w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+                                                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Заканчивается товар</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Товар "iPhone 15" заканчивается</p>
+                                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">1 час назад</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="px-4 py-3 bg-gray-50 dark:bg-slate-700/50 border-t border-gray-200 dark:border-slate-700">
+                                        <a href="#" class="text-center text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500">
+                                            Показать все уведомления →
+                                        </a>
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
+
+                        <!-- Messages -->
+                        <a href="#" class="relative p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            </svg>
+                        </a>
+
+                        <!-- Divider -->
+                        <div class="hidden sm:block w-px h-6 bg-gray-300 dark:bg-slate-600"></div>
+
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button
+                                @click.stop="toggleUserMenu"
+                                class="flex items-center gap-3 focus:outline-none"
+                            >
+                                <div class="flex-shrink-0 w-9 h-9 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white dark:ring-slate-700">
+                                    A
+                                </div>
+                                <div class="hidden md:block text-left">
+                                    <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{$attrs.auth.user.name}}</p>
+
+                                    <p v-for="role in $attrs.auth.user.roles" class="text-xs text-gray-500 dark:text-gray-400">{{role.title}}</p>
+                                </div>
+                                <svg class="hidden md:block w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            <!-- User Dropdown Menu -->
+                            <transition
+                                enter-active-class="transition ease-out duration-200"
+                                enter-from-class="opacity-0 scale-95"
+                                enter-to-class="opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-150"
+                                leave-from-class="opacity-100 scale-100"
+                                leave-to-class="opacity-0 scale-95"
+                            >
+                                <div
+                                    v-if="isUserMenuOpen"
+                                    @click.stop
+                                    class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden z-50"
+                                >
+                                    <div class="px-4 py-3 border-b border-gray-200 dark:border-slate-700">
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">{{$attrs.auth.user.name}}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{$attrs.auth.user.email}}</p>
+                                    </div>
+                                    <div class="py-2">
+                                        <a href="#" class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
+                                            <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                            Профиль
+                                        </a>
+                                        <a href="#" class="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
+                                            <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            Настройки
+                                        </a>
+                                    </div>
+                                    <div class="border-t border-gray-200 dark:border-slate-700 py-2">
+                                        <a href="#" class="flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150">
+                                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                            </svg>
+                                            Выйти
+                                        </a>
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
                 <slot/>
-            </div>
+            </main>
         </div>
-
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </template>
 
 <style scoped>
+/* Custom scrollbar for sidebar */
+aside ::-webkit-scrollbar {
+    width: 6px;
+}
 
+aside ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+aside ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+aside ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
 </style>

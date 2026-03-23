@@ -16,7 +16,8 @@ class ProductGroupService
 
     public static function update(ProductGroup $productGroup, array $data): ProductGroup
     {
-        $productGroup->update($data);
+
+        $productGroup->update($data['productGroup']);
         return $productGroup->fresh();
     }
 

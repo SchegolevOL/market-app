@@ -79,7 +79,7 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $categories =CategoryResource::collection($categories)->resolve();
-        $params = Param::all();
+        $params = ProductService::getParamByCategory($product->category);
         $params =ParamResource::collection($params)->resolve();
         $productGroups = ProductGroup::all();
         $productGroups =ProductGroupResource::collection($productGroups)->resolve();
@@ -128,6 +128,15 @@ class ProductController extends Controller
     public function indexChild(Product $product)
     {
         return ProductResource::collection($product->children)->resolve();
+    }
+
+    public function getCategoryParams(Category $category)
+    {
+
+
+        $params = ParamResource::collection(ProductService::getParamByCategory($category))->resolve();
+
+        return response()->json($params);
     }
 
 

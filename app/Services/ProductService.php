@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\Param;
 use App\Models\Product;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -74,6 +75,7 @@ class ProductService
     {
 
         $products = Product::byCategories($categoryChildren)->filter($data);
+
         return $products->distinct()->get();
     }
 
@@ -101,4 +103,12 @@ class ProductService
         return $cloneProduct;
     }
 
+    public static function getParamByCategory(Category $category)
+    {
+        $categoryIds = [$category->id];
+        if ($category->parent_id) {
+            $categoryIds[] = $category->parent_id;
+        }
+        return Param::whereIn('category_id', $categoryIds)->get();
+    }
 }

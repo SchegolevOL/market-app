@@ -12,48 +12,36 @@ export default {
     },
     layout: AdminLayout,
     props: {
-
+        categories: [],
     },
     data() {
         return {
-
-                productGroup: {
-                    title: null,
-
-
-                },
-                success:false,
-
-
+            productGroup: {
+                title: null,
+                category_id: null,
+            },
+            success:false,
         }
     },
 
 
     methods: {
         storeProductGroup() {
-            console.log(this.productGroup);
-
             axios.post(route('admin.product-groups.store'), this.productGroup)
                 .then(res => {
-
-
                     this.productGroup = {
-                        title:'',
-
+                        title: null,
+                        category_id: null,
                     };
                     this.$nextTick(()=>{
                         this.success = true;
                     })
-
-
                 })
-
         },
         storeProductGroupToIndex() {
             axios.post(route('admin.product-groups.store'), this.productGroup)
                 .then(function () {
-                        window.location.replace(route('admin.product-parents.index'));
-
+                        window.location.replace(route('admin.product-groups.index'));
                     }
                 )
         },
@@ -73,62 +61,76 @@ export default {
 </script>
 
 <template>
-    <div class="grid grid-cols-3 gap-4">
-        <div class="">
-            <!--      Page name      -->
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <h1>Create Product Group</h1>
-            </div>
-
-        </div>
-        <div class="">
-
-        </div>
-        <div class="">
-            <!--       Navigation buttons       -->
-            <Link :href="route('admin.product-groups.index')"
-                  class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
-                Back Index
-            </Link>
-        </div>
-        <div class="col-span-2">
-            <!--        Form fields     -->
-            <div class="">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="mb-8 flex items-center justify-between">
                 <div>
-                    <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
-                    <input v-model="productGroup.title" type="text" name="product-name" id="product-name"
-                           class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                           placeholder="Enter Title”" required="">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        Создать группу товаров
+                    </h1>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        Добавьте новую группу товаров
+                    </p>
                 </div>
+                <Link :href="route('admin.product-groups.index')"
+                      class="inline-flex items-center gap-2 px-5 py-2.5 font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Назад
+                </Link>
+            </div>
 
-                <div class="p-6 border-t border-gray-200 rounded-b">
+            <!-- Form -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <div class="space-y-6">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Название группы
+                        </label>
+                        <input v-model="productGroup.title" type="text" id="title"
+                               class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 placeholder-gray-400"
+                               placeholder="Введите название" required>
+                    </div>
 
-                    <button @click.prevent="storeProductGroup"
-                            class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Create
-                    </button>
-                    <button @click.prevent="storeProductGroupToIndex"
-                            class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Create to Index
-                    </button>
+                    <div>
+                        <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Категория
+                        </label>
+                        <select v-model="productGroup.category_id"
+                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200">
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.title }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <button @click.prevent="storeProductGroup"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Создать
+                        </button>
+                        <button @click.prevent="storeProductGroupToIndex"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Создать и перейти к списку
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="">
-            <!--        Image output        -->
 
+            <!-- Success Message -->
+            <div v-if="success">
+                <WindowSuccessMessage :message="'Группа товаров успешно создана'"/>
+            </div>
         </div>
-        <div v-if="success">
-            <WindowSuccessMessage :message="'Product Group Success Create'"/>
-        </div>
-
     </div>
-
-
-
-
-
-
 </template>
 
 <style scoped>

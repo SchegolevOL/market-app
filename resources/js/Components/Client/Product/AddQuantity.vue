@@ -4,11 +4,11 @@ import {defineComponent} from 'vue'
 export default defineComponent({
     name: "AddQuantity",
     props: {
-
+        qty: Number
     },
     data() {
         return {
-            quantityData: 1
+            quantityData: this.qty
         }
     },
     methods: {

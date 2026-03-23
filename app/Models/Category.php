@@ -26,6 +26,11 @@ class Category extends Model
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    public function params(): HasMany
+    {
+        return $this->hasMany(Param::class);
+    }
+
     public function paramProducts():HasManyThrough
     {
         //return $this->hasManyThrough(Product::class, Category::class,'category_id', 'id', 'parent_id', 'id');

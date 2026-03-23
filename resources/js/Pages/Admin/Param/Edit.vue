@@ -1,48 +1,55 @@
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import WindowSuccessMessage from "@/Components/Admin/General/WindowSuccessMessage.vue";
 
 
 export default {
     name: "Edit",
     components: {
+        WindowSuccessMessage,
         Link
     },
     layout: AdminLayout,
     props: {
         filterTypes: Array,
-        param:Array,
+        param: Array,
         categories: Array,
     },
     data(){
        return{
            entries:{
                param: this.param,
-               //_method: 'patch',
            },
-
+           success: false,
        }
     },
 
     methods: {
         updateParam() {
-            console.log(this.entries);
-
             axios.patch(route('admin.params.update', this.entries.param.id), this.entries)
                 .then(res => {
-
-
+                    this.$nextTick(() => {
+                        this.success = true;
+                    });
                 })
         },
         updateParamToIndex() {
             axios.patch(route('admin.params.update', this.entries), this.param)
                 .then(function () {
                         window.location.replace(route('admin.params.index'));
-
                     }
                 )
         },
 
+    },
+    watch:{
+        entries:{
+            handler(new_val, old_val){
+                this.success = false;
+            },
+            deep:true
+        }
     }
 
 
@@ -50,91 +57,89 @@ export default {
 </script>
 
 <template>
-    <div class="grid grid-cols-3 gap-4">
-        <div class="">
-            <!--      Page name      -->
-            <h3 class="text-xl font-semibold">
-                Update Param
-            </h3>
-
-        </div>
-        <div class="">
-
-        </div>
-        <div class="">
-            <!--       Navigation buttons       -->
-            <Link :href="route('admin.params.index')"
-                       class="px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-500 focus:outline-none focus:shadow-outline-green active:bg-green-600 transition duration-150 ease-in-out">
-            Back Index
-        </Link>
-        </div>
-        <div class="col-span-2">
-            <!--        Form fields     -->
-            <div class="">
-
-                <div class="">
-                    <div class="col-span-6 sm:col-span-3 py-4">
-                        <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Category</label>
-
-                        <select v-model="entries.param.category_id"
-                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                id="service" name="service">
-                            <option v-for="category in categories" :value="category.id">
-                                {{category.title}}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-span-6 sm:col-span-3">
-                        <label for="product-name" class="text-sm font-medium text-gray-900 block mb-2">Title</label>
-                        <input v-model="entries.param.title" type="text" name="product-name" id="product-name"
-                               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                               placeholder="Enter Title”" required="">
-                    </div>
-
-                    <div class="col-span-6 sm:col-span-3">
-                        <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Filter Type</label>
-
-                        <select v-model="entries.param.filter_type"
-                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"
-                                id="service" name="service">
-                            <option selected disabled>Select Filter Type</option>
-                            <option v-for="filter in filterTypes" :value="filter['value']">{{
-                                    filter['title']
-                                }}
-                            </option>
-
-                        </select>
-
-
-                    </div>
-
-
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        Редактировать параметр
+                    </h1>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        Измените данные параметра
+                    </p>
                 </div>
-                <div class="p-6 border-t border-gray-200 rounded-b">
+                <Link :href="route('admin.params.index')"
+                      class="inline-flex items-center gap-2 px-5 py-2.5 font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Назад
+                </Link>
+            </div>
 
-                    <button @click.prevent="updateParam"
-                            class="text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Update
-                    </button>
-                    <button @click.prevent="updateParamToIndex"
-                            class="m-3 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                            type="submit">Update to Index
-                    </button>
+            <!-- Form -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <div class="space-y-6">
+                    <div>
+                        <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Категория
+                        </label>
+                        <select v-model="entries.param.category_id"
+                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200">
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.title }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Название параметра
+                        </label>
+                        <input v-model="entries.param.title" type="text" id="title"
+                               class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 placeholder-gray-400"
+                               placeholder="Введите название" required>
+                    </div>
+
+                    <div>
+                        <label for="filter_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Тип фильтра
+                        </label>
+                        <select v-model="entries.param.filter_type"
+                                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200">
+                            <option disabled>Выберите тип фильтра</option>
+                            <option v-for="filter in filterTypes" :key="filter.value" :value="filter.value">
+                                {{ filter.title }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <button @click.prevent="updateParam"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Сохранить
+                        </button>
+                        <button @click.prevent="updateParamToIndex"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:bg-emerald-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Сохранить и перейти к списку
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="">
-            <!--        Image output        -->
 
+            <!-- Success Message -->
+            <div v-if="success">
+                <WindowSuccessMessage :message="'Параметр успешно обновлен'"/>
+            </div>
         </div>
-
     </div>
-
-
-
-
-
-
 </template>
 
 <style scoped>

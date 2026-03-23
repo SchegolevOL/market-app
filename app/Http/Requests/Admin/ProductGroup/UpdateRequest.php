@@ -21,9 +21,19 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
-            'title' => 'required|string',
+            'productGroup.title' => 'required|string',
+            'productGroup.category_id' => 'required|integer|exists:categories,id',
 
         ];
+    }
+    protected function passedValidation()
+    {
+        $validated = $this->validated();
+        return $this->merge([
+            'productGroup'=> $validated['productGroup'],
+
+        ]);
     }
 }

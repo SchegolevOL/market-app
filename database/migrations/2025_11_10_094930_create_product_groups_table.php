@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_groups', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('category_id')->index()->constrained('categories');
             $table->string('title');
             $table->timestamps();
         });

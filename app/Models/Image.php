@@ -14,6 +14,11 @@ class Image extends Model
 
     public function getUrlAttribute()
     {
+        // Если изображение внешнее (type = 'external'), возвращаем path как URL
+        if ($this->type === 'external') {
+            return $this->path;
+        }
+        // Иначе используем Storage disk
         return Storage::disk('public')->url($this->path);
     }
 }

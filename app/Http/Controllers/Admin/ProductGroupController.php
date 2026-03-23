@@ -35,8 +35,9 @@ class ProductGroupController extends Controller
      */
     public function create()
     {
+        $categories = CategoryResource::collection(Category::all())->resolve();
 
-        return inertia('Admin/ProductGroup/Create');
+        return inertia('Admin/ProductGroup/Create', compact("categories"));
     }
 
     /**
@@ -65,8 +66,9 @@ class ProductGroupController extends Controller
      */
     public function edit(ProductGroup $productGroup)
     {
+        $categories = CategoryResource::collection(Category::all())->resolve();
         $productGroup = ProductGroupResource::make($productGroup)->resolve();
-        return inertia('Admin/ProductGroup/Edit', compact('productGroup'));
+        return inertia('Admin/ProductGroup/Edit', compact('productGroup', 'categories'));
     }
 
     /**
@@ -74,7 +76,9 @@ class ProductGroupController extends Controller
      */
     public function update(UpdateRequest $request, ProductGroup $productGroup)
     {
-        $data = $request->validated();
+
+        $data = $request->validationData();
+
         $productGroup = ProductGroupService::update($productGroup, $data);
         return ProductGroupResource::make($productGroup)->resolve();
     }

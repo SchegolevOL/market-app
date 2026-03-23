@@ -17,6 +17,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = CategoryResource::collection(Category::whereNull('parent_id')->get())->resolve();
+
         return inertia("Client/Category/Index", compact('categories'));
     }
 

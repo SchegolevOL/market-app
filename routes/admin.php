@@ -20,4 +20,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', IsAdminMiddleware::c
     Route::post('products/{product}/replicate', [ProductController::class, 'replicate'])->name('products.replicate');
 
     Route::get('products/{product}/children', [ProductController::class, 'indexChild'])->name('products.children.index');
+    Route::get('categories/{category}/params', [ProductController::class, 'getCategoryParams'])->name('categories.params');
 });

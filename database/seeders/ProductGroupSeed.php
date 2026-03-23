@@ -14,13 +14,16 @@ class ProductGroupSeed extends Seeder
     public function run(): void
     {
         ProductGroup::create([
-            'title'=>'Футболка',
+            'category_id' => 1,
+            'title'=>'Верхняя одежда ',
         ]);
         ProductGroup::create([
-            'title'=>'Брюки',
+            'category_id' => 1,
+            'title'=>'Обувь',
         ]);
         ProductGroup::create([
-            'title'=>'Бриджи',
+            'category_id' => 1,
+            'title'=>'Нижняя одежда',
         ]);
     }
 }
